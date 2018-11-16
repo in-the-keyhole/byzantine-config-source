@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "dd"
+      Domain: "dd"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

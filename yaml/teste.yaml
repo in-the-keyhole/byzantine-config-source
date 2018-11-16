@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "teste"
+      Domain: "tet"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

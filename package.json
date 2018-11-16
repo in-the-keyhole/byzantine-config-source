@@ -3,21 +3,61 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "electron-is-dev": "^1.0.1",
     "react": "^16.6.1",
-    "react-dom": "^16.6.1"
+    "react-dom": "^16.6.1",
+    "axios": "^0.16.2",
+    "react-bootstrap": "^0.31.0",
+    "react-bootstrap-table": "^3.5.1",
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
+    "fabric-client": "1.2.1",
+    "fs-extra": "^2.0.0",
+    "js-sha256": "^0.9.0",
+    "jsonwebtoken": "^7.3.0",
+    "log4js": "^0.6.38",
+    "socket.io": "^2.1.1",
+    "fs": "0.0.1-security",
+    "json2yaml": "1.1.0"
+  },
+  "engines": {
+    "node": ">=6.9.5 <7.0",
+    "npm": ">=3.10.10 <4.0"
   },
   "devDependencies": {
-    "react-scripts": "2.1.1"
+    "concurrently": "^4.0.1",
+    "electron": "^3.0.8",
+    "electron-builder": "^20.33.2",
+    "electron-rebuild": "^1.8.2",
+    "react-scripts": "2.1.1",
+    "wait-on": "^3.2.0"
   },
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron": "electron .",
+    "electron-pack": "build --em.main=build/electron.js",
+    "preelectron-pack": "yarn build"
+  },
+  "build": {
+    "appId": "com.example.electron-cra",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
   },
+  "author": "Keyhole Software",
+  "homepage": "./",
   "browserslist": [
     ">0.2%",
     "not dead",
