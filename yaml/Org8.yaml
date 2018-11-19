@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "Org8"
+      Domain: "test"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

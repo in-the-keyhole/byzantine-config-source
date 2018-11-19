@@ -26,10 +26,7 @@ class AddConfigTx extends Component {
     constructor(props) {
         super(props);
       
-
     }
-
-
 
 
     render() {

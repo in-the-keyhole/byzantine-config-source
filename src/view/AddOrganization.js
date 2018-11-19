@@ -40,24 +40,29 @@ class AddOrganization extends Component {
         global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
 
-
         var status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
 
         this.setState({ status: status });
 
     }
 
-    generateClick = e => {
+    addArtifactsClick = e => {
         e.preventDefault();
+
 
         global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
 
+        var response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
 
-        var status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+        if (response.indexOf("ERROR:") >= 0 ) {
+            this.set.setState({ status: response });
+        } else {   
+            global.orgjson = response;
+            this.props.history.push("/addartifacts");
+        }    
 
-        this.setState({ status: status });
-
+  
     }
 
 
@@ -72,7 +77,7 @@ class AddOrganization extends Component {
             if (this.state.status.indexOf('SUCCESS:') >= 0) {
 
                 Status = <div class="alert alert-success" role="alert">
-                 {this.state.status}...  <button id="genconfigtx" onClick={this.generateConfigTxClick} name="genconfig" className="btn btn-primary">Generate Config Tx</button>
+                 {this.state.status}...  <button id="genconfigtx" onClick={this.addArtifactsClick} name="genconfig" className="btn btn-primary">Generate Config Tx</button>
                 </div>
 
             } else {
@@ -81,12 +86,9 @@ class AddOrganization extends Component {
                     {this.state.status}
                 </div>
 
-
             }
 
-
         }
-
 
 
         return (

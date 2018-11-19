@@ -25,72 +25,94 @@ var fs = require('fs');
 
 logger.setLevel(config.loglevel);
 
-var orgYaml = function(json) {
+var orgYaml = function (json) {
 
-  let jsonyaml = {};
-  
-   jsonyaml.PeerOrgs = [{Name: json.name, Domain: json.domain, EnableNodeOUs: true, Template: { Count : json.peers}, Users: { Count: json.users}}];
-   let yaml = yamljs.stringify(jsonyaml);
-   
-   logger.debug("Converted to Org Yaml "+yaml);
+    let jsonyaml = {};
+
+    jsonyaml.PeerOrgs = [{ Name: json.name, Domain: json.domain, EnableNodeOUs: true, Template: { Count: json.peers }, Users: { Count: json.users } }];
+    let yaml = yamljs.stringify(jsonyaml);
+
+    logger.debug("Converted to Org Yaml " + yaml);
 
     // write to file system 
 
     var fs = require('fs');
-    var filepath = config.yaml_dir+"/"+json.name+".yaml";
+    var filepath = config.yaml_dir + "/" + json.name + ".yaml";
 
-        fs.writeFile(filepath, yaml, (err) => {
-            if (err) throw err;
-            logger.info("The file was succesfully saved!");
-        });      
+    fs.writeFile(filepath, yaml, (err) => {
+        if (err) throw err;
+        logger.info("The file was succesfully saved!");
+    });
 
-   // Exceute crypto 
+    // Exceute crypto 
 
-   const { exec } = require('child_process');
-   const testscript = exec('cryptogen generate --config=./'+config.yaml_dir+'/'+json.name+'.yaml');
-   
-   testscript.stdout.on('data', function(data){
-       console.log(data); 
-       console.log('Cryptogen Executed')
-   });
-   
-   testscript.stderr.on('data', function(data){
-       console.log(data);
-       console.log('Cryptogen failed... ');
-   });
-       
+    const { exec } = require('child_process');
+    const testscript = exec('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
+
+    testscript.stdout.on('data', function (data) {
+        console.log(data);
+        console.log('Cryptogen Executed')
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('Cryptogen failed... ');
+    });
 
 
-   return;
+
+    return;
 
 }
 
 
-var configTx = function(json) {
+var configTx = function (json) {
 
-   let jsonyaml = {};
-   let orgs = [];
-   orgs['&'+json.name] = { Name: json.name+"MSP", ID: json.domain+MSP, MSPDir: 'crypto-config/peerOrganizations/'+json.Domain+'/msp', AnchorPeers: [{ Host : "peer0.".json.Domain, port: 7051}]};
-   jsonyaml.Organizations = [ orgs ];
-   let yaml = yamljs.stringify(jsonyaml);
-   
-   logger.debug("Converted to Org ConfigTX Yaml "+yaml);
+    let jsonyaml = {};
+    let orgs = [];
+    console.log("Name=" + json.domain);
+    let org = {};
+    org['&' + json.name] = { Name: json.name + "MSP", ID: json.name + 'MSP', MSPDir: 'crypto-config/peerOrganizations/' + json.domain + '/msp', AnchorPeers: [{ Host: "peer0." + json.domain, port: 7051 }] };
+    orgs.push(org);
+    jsonyaml.Organizations = orgs;
+    let yaml = yamljs.stringify(jsonyaml);
+
+    // format label...
+
+    let index = yaml.indexOf('&') + json.name.length;
+    yaml = yaml.substr(0, index) + yaml.substr(index + 2);
+
+
+    logger.debug("Converted to Org ConfigTX Yaml " + yaml);
 
     // write to file system 
 
     var fs = require('fs');
-    var filepath = config.yaml_dir+"/config_tx.yaml";
+    var filepath = "./configtx.yaml";
 
-        fs.writeFile(filepath, yaml, (err) => {
-            if (err) throw err;
-            logger.info("The file was succesfully saved!");
-        });      
+    fs.writeFile(filepath, yaml, (err) => {
+        if (err) throw err;
+        logger.info("The file was succesfully saved!");
+    });
 
+    // execute config    
 
-   
+    //get update JSON
 
+    const { exec } = require('child_process');
+    let output = './channel-artifacts/' + json.name + '.json';
+    // const testscript = exec('configtxgen -printOrg '+json.name+'MSP > ./channel-artifacts/'+json.name+'.json');
+    const configtxgen = exec('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
+    configtxgen.stdout.on('data', function (data) {
 
+        logger.info("Reading " + output);
+        console.log('Configtxgen Executed');
+    });
 
+    configtxgen.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('Configtxgen failed... ');
+    });
 
 
 }

@@ -1,0 +1,12 @@
+---
+  Organizations: 
+    - 
+      - 
+        &name: 
+          Name: "nameMSP"
+          ID: "domainMSP"
+          MSPDir: "crypto-config/peerOrganizations/domain/msp"
+          AnchorPeers: 
+            - 
+              Host: "peer0.domain"
+              port: 7051

@@ -1,0 +1,11 @@
+---
+  Organizations: 
+    - 
+      &Org 
+        Name: "Org3MSP"
+        ID: "Org3MSP"
+        MSPDir: "crypto-config/peerOrganizations/com.example/msp"
+        AnchorPeers: 
+          - 
+            Host: "peer0.com.example"
+            port: 7051

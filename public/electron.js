@@ -50,9 +50,33 @@ function createWindow() {
       } catch (e) {
         event.returnValue = "ERROR";
         logger.info("ERROR: Crytpo Configuration failed, make sure cryptogen binary is in the path. " + e);
+        
       }
 
     });
+
+
+    ipcMain.on('addtx', (event, arg) => {
+
+      let json = JSON.parse(arg);
+
+      console.log("ADD TX = "+arg);
+
+      try {
+        let patchjson = yaml.configTx(json);
+      
+        event.returnValue = patchjson;
+      } catch (e) {
+        event.returnValue = "ERROR";
+        logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
+        throw e;
+      }
+
+    });
+
+
+
+
 
   });
 
