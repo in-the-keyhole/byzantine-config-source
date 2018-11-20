@@ -50,7 +50,7 @@ class AddOrganization extends Component {
         e.preventDefault();
 
 
-        global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
+      /*  global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
 
         var response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
@@ -59,9 +59,11 @@ class AddOrganization extends Component {
             this.set.setState({ status: response });
         } else {   
             global.orgjson = response;
-            this.props.history.push("/addartifacts");
-        }    
-
+            this.props.history.push("/genartifacts");
+         }  */
+         
+         
+         this.props.history.push("/genartifacts");
   
     }
 

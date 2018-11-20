@@ -2,7 +2,7 @@
   PeerOrgs: 
     - 
       Name: "Org5"
-      Domain: "example.com"
+      Domain: "test"
       EnableNodeOUs: true
       Template: 
         Count: 2

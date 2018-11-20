@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Organizations from './view/Organizations.js';
 import AddOrganization from './view/AddOrganization.js';
-import AddArtifacts from './view/AddArtifacts.js';
+import GenerateArtifacts from './view/GenerateArtifacts.js';
 
 import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
 
@@ -47,7 +47,7 @@ class App extends Component {
       <Route exact path="/" component={Organizations} />
       <Route exact path="/org" component={Organizations} />
       <Route exact path="/addorg" component={AddOrganization} />
-      <Route exact path="/addartifacts" component={AddArtifacts} />
+      <Route exact path="/genartifacts" component={GenerateArtifacts} />
      
     </Switch>
       </main>

@@ -11,6 +11,7 @@ const blockinfo = require('./service/blockinfo.js');
 const yaml = require('./service/yaml.js');
 var log4js = require('log4js');
 var logger = log4js.getLogger('service/electron.js');
+var fs = require('fs');
 
 let mainWindow;
 
@@ -50,7 +51,7 @@ function createWindow() {
       } catch (e) {
         event.returnValue = "ERROR";
         logger.info("ERROR: Crytpo Configuration failed, make sure cryptogen binary is in the path. " + e);
-        
+
       }
 
     });
@@ -60,20 +61,41 @@ function createWindow() {
 
       let json = JSON.parse(arg);
 
-      console.log("ADD TX = "+arg);
+      console.log("ADD TX = " + arg);
 
-      try {
-        let patchjson = yaml.configTx(json);
-      
-        event.returnValue = patchjson;
-      } catch (e) {
+      yaml.configTx(json).then((r) => {
+        event.returnValue = r;
+
+      }).catch((e) => {
         event.returnValue = "ERROR";
         logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
         throw e;
-      }
+
+      });
+
 
     });
 
+
+    ipcMain.on('getconfig', (event, arg) => {
+
+      let json = JSON.parse(arg);
+
+      logger.info("Getting Config = " + arg);
+
+      yaml.getConfig('mychannel').then((r) => {
+        event.returnValue = r;
+        console.log(" Results = " + r);
+
+      }).catch((e) => {
+        event.returnValue = "ERROR";
+        logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
+        throw e;
+
+      });
+
+
+    });
 
 
 

@@ -99,23 +99,28 @@ var configTx = function (json) {
 
     //get update JSON
 
-    const { exec } = require('child_process');
-    let output = './channel-artifacts/' + json.name + '.json';
+    // const { exec } = require('child_process');
+    // let output = './channel-artifacts/' + json.name + '.json';
     // const testscript = exec('configtxgen -printOrg '+json.name+'MSP > ./channel-artifacts/'+json.name+'.json');
-    const configtxgen = exec('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
-    configtxgen.stdout.on('data', function (data) {
 
-        logger.info("Reading " + output);
-        console.log('Configtxgen Executed');
+    return new Promise((resolve, reject) => {
+
+        const { exec } = require('child_process');
+        let output = './channel-artifacts/' + json.name + '.json';
+
+        const configtxgen = exec('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output,
+        (error, stdout, stderr) => {
+            
+            let contents = fs.readFileSync(output,'utf8');
+            return resolve(contents);    
+        }
+        );
+    
+
     });
-
-    configtxgen.stderr.on('data', function (data) {
-        console.log(data);
-        console.log('Configtxgen failed... ');
-    });
-
-
 }
+
+
 
 exports.orgYaml = orgYaml;
 exports.configTx = configTx;
