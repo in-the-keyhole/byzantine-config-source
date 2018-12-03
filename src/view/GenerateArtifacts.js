@@ -27,7 +27,10 @@ class AddConfigTx extends Component {
         super(props);
         this.state = global.orgyaml;
         this.operations = [];
-        this.setState({current:""});
+        this.setState({ current: "" });
+        this.configblock = null;
+        this.orgjson = null;
+        this.modifiedjson = null;
 
     }
 
@@ -40,39 +43,107 @@ class AddConfigTx extends Component {
 
         if (response.indexOf("ERROR:") >= 0) {
             current = "ERROR generations Organization JSON Update...";
-            this.operations.push(current);
-            this.set.setState({ current: current });
+
         } else {
             global.orgjson = response;
             current = "Organization JSON Update Created...";
-            this.operations.push(current);
-            this.setState({current: current });
+
         }
 
+        this.operations.push(current);
+        this.setState({ current: current });
+
+        this.getConfigBlock();
+        this.convertAndTrim();
+        this.mergeCrypto();
+        this.convertModified();
+
+
 
     }
 
 
-   getConfigBlock() {
+    getConfigBlock() {
 
-    let current = "";
-    var ipcRenderer = electron.ipcRenderer;       
+        let current = "";
+        var ipcRenderer = electron.ipcRenderer;
 
-    var response = ipcRenderer.sendSync('getconfig', JSON.stringify(this.state));
+        var response = ipcRenderer.sendSync('block', JSON.stringify(this.state));
 
-    if (response.indexOf("ERROR:") >= 0) {
-        current = "ERROR generations Organization JSON Update...";
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR Getting Config Block";
+
+        } else {
+            this.configblock = JSON.parse(response);
+            current = "Configuration Block retrrieved...";
+            console.log("Config Block " + this.configblock);
+
+        }
+
         this.operations.push(current);
-        this.set.setState({ current: current });
-    } else {
-        global.orgjson = response;
-        current = "Organization JSON Update Created...";
-        this.operations.push(current);
-        this.setState({current: current });
+        this.setState({ current: current });
+
+
     }
 
 
-   }
+    convertAndTrim() {
+
+        this.configblock = this.configblock.data.data[0].payload.data.config;
+       // let tempblock = this.configblock.data.data[0].payload.data.config;
+       // this.configblock = { data: { data: [ { payload: { data: { config: tempblock  }     }   } ]}};
+
+        let current = "Trimmed Configuration Block...";
+        this.operations.push(current);
+        this.setState({ current: current });
+
+
+    }
+
+    mergeCrypto() {
+
+        this.modifiedjson = JSON.parse(JSON.stringify(this.configblock));
+        // this.modifiedjson.channel_group.groups.Application.groups[this.state.name + "MSP"] = this.orgjson;
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('mergecrypto', JSON.stringify(this.modifiedjson));
+
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR merging Crypto JSON";
+
+        } else {
+
+            current = "Org Crypto Merged...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+    convertModified() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('convertmodified', JSON.stringify(this.modifiedjson));
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR Converting modified JSON";
+
+        } else {
+
+            current = "Converted Modified Block to Protocol Buffer...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
 
 
     render() {
@@ -89,10 +160,10 @@ class AddConfigTx extends Component {
 
         return (
 
-           <div> 
-            <div> Generating Artifacts for new Organization : {this.state.name} </div>
-            <div> <ul> {opslist} </ul>  </div>
-           </div> 
+            <div>
+                <div> Generating Artifacts for new Organization : {this.state.name} </div>
+                <div> <ul> {opslist} </ul>  </div>
+            </div>
         );
     }
 }

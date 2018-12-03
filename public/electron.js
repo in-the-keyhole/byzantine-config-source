@@ -12,6 +12,7 @@ const yaml = require('./service/yaml.js');
 var log4js = require('log4js');
 var logger = log4js.getLogger('service/electron.js');
 var fs = require('fs');
+var config = require('./config.js');
 
 let mainWindow;
 
@@ -24,6 +25,8 @@ function createWindow() {
 
     const json = JSON.parse(info);
     const blocks = json.height.low;
+    global.blocks = blocks;
+
 
     mainWindow = new BrowserWindow({ width: 900, height: 860 });
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
@@ -36,7 +39,7 @@ function createWindow() {
       blockservice.getConfigBlock('mychannel', blocks - 1).then(
         function (res) {
 
-          console.log(" Results = " + res); // prints "ping"
+          global.configblock = res;
           event.returnValue = res;
         });
     });
@@ -48,6 +51,7 @@ function createWindow() {
       try {
         let yamlstring = yaml.orgYaml(json);
         event.returnValue = "SUCCESS: Crypto Material Generated in crypto-config";
+        global.orginfo = json;
       } catch (e) {
         event.returnValue = "ERROR";
         logger.info("ERROR: Crytpo Configuration failed, make sure cryptogen binary is in the path. " + e);
@@ -77,25 +81,106 @@ function createWindow() {
     });
 
 
-    ipcMain.on('getconfig', (event, arg) => {
+    ipcMain.on('convertmodified', (event, jsonstring) => {
 
-      let json = JSON.parse(arg);
+      let json = JSON.parse(jsonstring);
 
-      logger.info("Getting Config = " + arg);
+      // write to file
 
-      yaml.getConfig('mychannel').then((r) => {
-        event.returnValue = r;
-        console.log(" Results = " + r);
-
-      }).catch((e) => {
-        event.returnValue = "ERROR";
-        logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
-        throw e;
+        fs.writeFile('./modified.json', JSON.stringify(global.modifiedjson), (err) => {
+        if (err) throw err;
+        logger.info("The file was succesfully saved!");
+     
+        event.returnValue = yaml.convertToPb('./modified.json','./modified_config.pb');
 
       });
 
+    });
+
+
+    ipcMain.on('convertOriginal', (event, jsonstring) => {
+
+      let json = JSON.parse(global.configblock);
+
+      // write to file
+
+        fs.writeFile('./config.json', JSON.stringify(json), (err) => {
+        if (err) throw err;
+        logger.info("The file was succesfully saved!");
+     
+        event.returnValue = yaml.convertToPb(json, './config.json')
+
+      });
 
     });
+
+
+
+
+
+    ipcMain.on('mergecrypto', (event, jsonstring) => {
+
+      let json = JSON.parse(jsonstring);
+
+      var filepath = config.channel_artifacts_dir + "/" + global.orginfo.name + ".json";
+
+      let orgjson = fs.readFileSync(filepath, 'utf8');
+
+     // console.log("CONIG BLOCK JSON ="+ JSON.stringify(json) );
+
+      // convert string to integer
+      var o = JSON.parse(orgjson);
+
+    
+    
+
+   /*   o.version = 0;
+      
+      o.policies.Admins.version=0;
+      o.policies.Writers.version=0;
+      o.policies.Readers.version=0;
+      o.values.MSP.version=0;
+*/
+       console.log("MSP version = "+o.values.MSP.version);
+   
+      global.modifiedjson = json;
+      global.modifiedjson.channel_group.groups.Application.groups[global.orginfo.name + "MSP"] = o;
+    
+      // Fix policy type
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Admins.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Writers.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Readers.policy.type = 1;
+
+      global.modifiedjson.channel_group.groups.Application.groups[global.orginfo.name + "MSP"].policies.Admins.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups[global.orginfo.name + "MSP"].policies.Writers.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups[global.orginfo.name + "MSP"].policies.Readers.policy.type = 1;
+
+      global.modifiedjson.channel_group.groups.Orderer.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.Readers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.BlockValidation.policy.type = 3;
+
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Admins.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Readers.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Writers.policy.type = 1;
+   
+      global.modifiedjson.channel_group.groups.Application.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Application.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Application.policies.Readers.policy.type = 3;
+
+      global.modifiedjson.channel_group.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.policies.Readers.policy.type = 3;
+
+       global.modifiedjson=  yaml.removeRuleType(global.modifiedjson);
+
+      // console.log("MY JSON + "+JSON.stringify(global.modifiedjson));
+
+      event.returnValue = "JSON Merged";
+
+
+    });
+
 
 
 

@@ -50,12 +50,12 @@ var orgYaml = function (json) {
     const testscript = exec('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
 
     testscript.stdout.on('data', function (data) {
-        console.log(data);
+       // console.log(data);
         console.log('Cryptogen Executed')
     });
 
     testscript.stderr.on('data', function (data) {
-        console.log(data);
+       // console.log(data);
         console.log('Cryptogen failed... ');
     });
 
@@ -122,6 +122,152 @@ var configTx = function (json) {
 
 
 
+var convertToPb = function (fileName,pbfileName) {
+
+    // Exceute crypto 
+
+    const { exec } = require('child_process');
+    const testscript = exec('configtxlator proto_encode --input '+fileName+' --type common.Config --output '+pbfileName);
+
+    testscript.stdout.on('data', function (data) {
+        console.log(data);
+        console.log('Converted to PB')
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('PB Converstion failed... ');
+    });
+
+
+    return  "Converted "+fileName+" to Protocol Buffer";
+
+}
+
+var recurse = function(obj) {
+ 
+
+    for (var k in obj)
+    {
+        
+        if (k == 'rules') {
+          
+            console.log('Deleting '+obj[k][0].Type);
+            delete obj[k][0].Type;
+        }
+
+        if (k == 'rule') {
+
+              delete obj[k].Type; 
+              if (obj[k].n_out_of) {
+
+                  let value = obj[k].n_out_of.N;
+                  delete obj[k].n_out_of.N;
+                  obj[k].n_out_of.n =  value;
+
+              }
+
+        }
+
+
+        if (k == 'rule') {
+
+            delete obj[k].Type; 
+            if (obj[k].n_out_of) {
+
+                let value = obj[k].n_out_of.N;
+                delete obj[k].n_out_of.N;
+                obj[k].n_out_of.n =  value;
+
+            }
+
+      }
+
+
+
+
+
+        if (k == 'identities') {
+
+         let classification = obj[k][0].principal_classification; 
+         let msp_identifier = obj[k][0].msp_identifier;
+         let role = obj[k][0].Role;   
+         
+         delete obj[k][0];
+          
+         obj[k] = [ {principal: { msp_identifier: msp_identifier, role: 'ADMIN' }, principal_classification: 'ROLE'} ];
+
+      
+        }    
+
+
+        if (k == 'root_certs') {
+
+           let cert = obj[k][0];
+           let begin =  '-----BEGIN CERTIFICATE-----\n';
+           let end = '\n-----END CERTIFICATE-----\n';
+           obj[k][0] = cert.replace(begin,'').replace(end,'');
+
+        }
+
+
+
+        if (k == 'admins') {
+
+            let admincert = obj[k][0];
+            let begin =  '-----BEGIN CERTIFICATE-----\n';
+            let end = '\n-----END CERTIFICATE-----\n';
+            obj[k][0] = admincert.replace(begin,'').replace(end,'');
+ 
+         }
+
+        
+
+
+
+        if (k == 'tls_root_certs') {
+        
+            let rootcert = obj[k][0];
+            let begin =  '-----BEGIN CERTIFICATE-----\n';
+            let end = '\n-----END CERTIFICATE-----\n';
+            obj[k][0] = rootcert.replace(begin,'').replace(end,'');
+ 
+         }
+ 
+
+
+        if (typeof obj[k] == "object" && obj[k] !== null) {
+            recurse(obj[k]);
+        }    
+        else {
+            
+            if (k == 'root_certs') {
+                
+
+                console.log(k);
+            }
+          
+
+        }  
+    }
+
+    
+
+}
+
+
+var removeRuleType = function(json) {
+
+    let result = JSON.parse( JSON.stringify(json) );
+
+     recurse(result);
+
+    return result;
+}
+
+
 exports.orgYaml = orgYaml;
 exports.configTx = configTx;
+exports.convertToPb = convertToPb;
+exports.removeRuleType =  removeRuleType;
 
