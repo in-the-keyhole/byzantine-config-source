@@ -56,9 +56,11 @@ class AddConfigTx extends Component {
         this.getConfigBlock();
         this.convertAndTrim();
         this.mergeCrypto();
+        this.convertOriginal();
         this.convertModified();
-
-
+        this.computeDelta();
+        this.decodeToJson();
+       
 
     }
 
@@ -89,9 +91,13 @@ class AddConfigTx extends Component {
 
     convertAndTrim() {
 
+
+        var ipcRenderer = electron.ipcRenderer;
         this.configblock = this.configblock.data.data[0].payload.data.config;
        // let tempblock = this.configblock.data.data[0].payload.data.config;
        // this.configblock = { data: { data: [ { payload: { data: { config: tempblock  }     }   } ]}};
+
+        var response = ipcRenderer.sendSync('block', JSON.stringify(this.configblock));
 
         let current = "Trimmed Configuration Block...";
         this.operations.push(current);
@@ -135,6 +141,66 @@ class AddConfigTx extends Component {
         } else {
 
             current = "Converted Modified Block to Protocol Buffer...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+    convertOriginal() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('convertoriginal', JSON.stringify(this.modifiedjson));
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR Converting original JSON";
+
+        } else {
+
+            current = "Converted Config Block to Protocol Buffer...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+    computeDelta() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('computedelta');
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR computing delta";
+
+        } else {
+
+            current = "Computed Delta Configuration Block...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+    decodeToJson() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('decodetojson');
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR computing delta";
+
+        } else {
+
+            current = "Decoded Configuration Block to JSON...";
 
         }
 

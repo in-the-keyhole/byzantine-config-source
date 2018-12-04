@@ -80,6 +80,14 @@ function createWindow() {
 
     });
 
+    ipcMain.on('decodetojson', (event) => {
+
+       let pbfile = './'+global.orginfo.name+'_update';
+       yaml.decodeToJson(pbfile);
+       event.returnValue = 'pb file decoded to JSON '+pbfile+'.json';
+
+    });
+
 
     ipcMain.on('convertmodified', (event, jsonstring) => {
 
@@ -98,24 +106,64 @@ function createWindow() {
     });
 
 
-    ipcMain.on('convertOriginal', (event, jsonstring) => {
+    ipcMain.on('convertoriginal', (event, jsonstring) => {
 
-      let json = JSON.parse(global.configblock);
+      let json = global.modifiedjson;
 
       // write to file
 
+        json  =  yaml.removeRuleType(json);
         fs.writeFile('./config.json', JSON.stringify(json), (err) => {
         if (err) throw err;
         logger.info("The file was succesfully saved!");
      
-        event.returnValue = yaml.convertToPb(json, './config.json')
+        event.returnValue = yaml.convertToPb('./config.json','./config.pb');
 
       });
 
     });
 
+    ipcMain.on('strip',  (event,jsonstring) => {
+
+      let json = JSON.parse(jsonstring);
+
+      global.modifiedjson = json;
+     
+      // Fix policy type
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Admins.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Writers.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Application.groups.Org1MSP.policies.Readers.policy.type = 1;
+    
+      global.modifiedjson.channel_group.groups.Orderer.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.Readers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Orderer.policies.BlockValidation.policy.type = 3;
+
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Admins.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Readers.policy.type = 1;
+      global.modifiedjson.channel_group.groups.Orderer.groups.OrdererOrg.policies.Writers.policy.type = 1;
+   
+      global.modifiedjson.channel_group.groups.Application.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Application.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.groups.Application.policies.Readers.policy.type = 3;
+
+      global.modifiedjson.channel_group.policies.Admins.policy.type = 3;
+      global.modifiedjson.channel_group.policies.Writers.policy.type = 3;
+      global.modifiedjson.channel_group.policies.Readers.policy.type = 3;
+      yaml.removeRuleType(global.modifiedjson);
 
 
+
+    });
+
+
+
+    ipcMain.on('computedelta', (event) => {
+        let updated = global.orginfo.name+'_update.pb';
+        yaml.computeUpdateDeltaPb('mychannel','./config.pb','./modified_config.pb','./'+updated);
+        event.returnValue = 'Updated '+updated+' generated'; 
+
+    });
 
 
     ipcMain.on('mergecrypto', (event, jsonstring) => {
@@ -131,9 +179,7 @@ function createWindow() {
       // convert string to integer
       var o = JSON.parse(orgjson);
 
-    
-    
-
+  
    /*   o.version = 0;
       
       o.policies.Admins.version=0;
@@ -180,9 +226,6 @@ function createWindow() {
 
 
     });
-
-
-
 
 
   });

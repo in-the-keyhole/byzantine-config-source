@@ -144,6 +144,58 @@ var convertToPb = function (fileName,pbfileName) {
 
 }
 
+
+
+var computeUpdateDeltaPb = function (channel,original,modified,updated) {
+
+    // Exceute crypto 
+
+    const { exec } = require('child_process');
+    const testscript = exec('configtxlator compute_update --channel_id '+channel+' --original '+original+' --updated '+modified+' --output '+updated);
+
+    testscript.stdout.on('data', function (data) {
+        console.log(data);
+        console.log('Created Updated PB')
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('PB Updated Converstion failed... ');
+    });
+
+
+    return  "Created Updated PB -"+updated;
+
+}
+
+
+var decodeToJson = function (input) {
+
+    // Exceute crypto 
+
+    const { exec } = require('child_process');
+    const testscript = exec('configtxlator proto_decode --input '+ input+'.pb --type common.ConfigUpdate --output '+input+'.json');
+
+    testscript.stdout.on('data', function (data) {
+        console.log(data);
+        console.log('Decoded '+input+ ' to JSON');
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('Error decoding to '+input+' to JSON');
+    });
+
+
+    return  "Decoded to JSON -"+input;
+
+}
+
+
+
+
+
+
 var recurse = function(obj) {
  
 
@@ -270,4 +322,6 @@ exports.orgYaml = orgYaml;
 exports.configTx = configTx;
 exports.convertToPb = convertToPb;
 exports.removeRuleType =  removeRuleType;
+exports.computeUpdateDeltaPb =  computeUpdateDeltaPb;
+exports.decodeToJson = decodeToJson;
 
