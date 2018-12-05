@@ -60,6 +60,8 @@ class AddConfigTx extends Component {
         this.convertModified();
         this.computeDelta();
         this.decodeToJson();
+        this.createEnvelope();
+        this.convertEnvelopeToPb();
        
 
     }
@@ -208,6 +210,51 @@ class AddConfigTx extends Component {
         this.setState({ current: current });
 
     }
+
+
+    createEnvelope() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('createenvelope');
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR creating envelope";
+
+        } else {
+
+            current = "Config envelope created...";
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+    convertEnvelopeToPb() {
+
+        var ipcRenderer = electron.ipcRenderer;
+        let current = null;
+        var response = ipcRenderer.sendSync('convertenvelope');
+        if (response.indexOf("ERROR:") >= 0) {
+            current = "ERROR converting envelope";
+
+        } else {
+
+            current = response;
+
+        }
+
+        this.operations.push(current);
+        this.setState({ current: current });
+
+    }
+
+
+
+
+
 
 
 

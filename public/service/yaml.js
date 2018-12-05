@@ -192,6 +192,58 @@ var decodeToJson = function (input) {
 }
 
 
+var createEnvelope = function (orgname) {
+
+
+    let envelopeFileName = './'+orgname+'_update_in_envelope.json';
+    let modified = './'+orgname+'_update.json';
+
+    let json = fs.readFileSync(modified, 'utf8');
+    var o = JSON.parse(json);
+
+    var envelope = {"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update": o }}};
+     
+    fs.writeFile(envelopeFileName, JSON.stringify(envelope), (err) => {
+        if (err) throw err;
+        logger.info("Envelope file was succesfully created!");
+    
+      });
+
+
+    return  "Modified Envelope Created -"+envelopeFileName;
+
+}
+
+
+var convertEnvelope = function (orgname) {
+
+
+    let envelopeFileName = './'+orgname+'_update_in_envelope.json';
+    let outputFileName = './'+orgname+'_update_in_envelope.pb';
+    // Exceute crypto 
+
+    const { exec } = require('child_process');
+    const testscript = exec('configtxlator proto_encode --input '+envelopeFileName+' --type common.Envelope --output '+outputFileName);
+
+    testscript.stdout.on('data', function (data) {
+        console.log(data);
+        console.log('Created Envelope PB')
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
+        console.log('PB Envelope failed... ');
+    });
+
+    return "PB Envelope created "+outputFileName+"...";
+
+}
+
+
+
+
+
+
 
 
 
@@ -324,4 +376,6 @@ exports.convertToPb = convertToPb;
 exports.removeRuleType =  removeRuleType;
 exports.computeUpdateDeltaPb =  computeUpdateDeltaPb;
 exports.decodeToJson = decodeToJson;
+exports.createEnvelope = createEnvelope;
+exports.convertEnvelope = convertEnvelope;
 

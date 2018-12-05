@@ -166,6 +166,21 @@ function createWindow() {
     });
 
 
+    ipcMain.on('createenvelope', (event) => {
+
+      event.returnValue = yaml.createEnvelope(global.orginfo.name);
+
+    });
+
+
+    ipcMain.on('convertenvelope', (event) => {
+
+      event.returnValue = yaml.convertEnvelope(global.orginfo.name);
+
+    });
+
+
+
     ipcMain.on('mergecrypto', (event, jsonstring) => {
 
       let json = JSON.parse(jsonstring);
