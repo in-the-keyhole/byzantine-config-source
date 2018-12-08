@@ -46,9 +46,9 @@ var orgYaml = function (json) {
 
     // Exceute crypto 
 
-    const { exec } = require('child_process');
-    const testscript = exec('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
-
+    const { execSync } = require('child_process');
+    const testscript = execSync('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
+/*
     testscript.stdout.on('data', function (data) {
        // console.log(data);
         console.log('Cryptogen Executed')
@@ -58,7 +58,7 @@ var orgYaml = function (json) {
        // console.log(data);
         console.log('Cryptogen failed... ');
     });
-
+*/
 
 
     return;
@@ -126,9 +126,9 @@ var convertToPb = function (fileName,pbfileName) {
 
     // Exceute crypto 
 
-    const { exec } = require('child_process');
-    const testscript = exec('configtxlator proto_encode --input '+fileName+' --type common.Config --output '+pbfileName);
-
+    const { execSync } = require('child_process');
+    const testscript = execSync('configtxlator proto_encode --input '+fileName+' --type common.Config --output '+pbfileName);
+/*
     testscript.stdout.on('data', function (data) {
         console.log(data);
         console.log('Converted to PB')
@@ -138,6 +138,7 @@ var convertToPb = function (fileName,pbfileName) {
         console.log(data);
         console.log('PB Converstion failed... ');
     });
+    */
 
 
     return  "Converted "+fileName+" to Protocol Buffer";
@@ -150,9 +151,10 @@ var computeUpdateDeltaPb = function (channel,original,modified,updated) {
 
     // Exceute crypto 
 
-    const { exec } = require('child_process');
-    const testscript = exec('configtxlator compute_update --channel_id '+channel+' --original '+original+' --updated '+modified+' --output '+updated);
+    const { execSync } = require('child_process');
+    const testscript = execSync('configtxlator compute_update --channel_id '+channel+' --original '+original+' --updated '+modified+' --output '+updated);
 
+    /*
     testscript.stdout.on('data', function (data) {
         console.log(data);
         console.log('Created Updated PB')
@@ -161,7 +163,7 @@ var computeUpdateDeltaPb = function (channel,original,modified,updated) {
     testscript.stderr.on('data', function (data) {
         console.log(data);
         console.log('PB Updated Converstion failed... ');
-    });
+    }); */
 
 
     return  "Created Updated PB -"+updated;
@@ -173,19 +175,8 @@ var decodeToJson = function (input) {
 
     // Exceute crypto 
 
-    const { exec } = require('child_process');
-    const testscript = exec('configtxlator proto_decode --input '+ input+'.pb --type common.ConfigUpdate --output '+input+'.json');
-
-    testscript.stdout.on('data', function (data) {
-        console.log(data);
-        console.log('Decoded '+input+ ' to JSON');
-    });
-
-    testscript.stderr.on('data', function (data) {
-        console.log(data);
-        console.log('Error decoding to '+input+' to JSON');
-    });
-
+    const { execSync } = require('child_process');
+    const testscript = execSync('configtxlator proto_decode --input '+ input+'.pb --type common.ConfigUpdate --output '+input+'.json');
 
     return  "Decoded to JSON -"+input;
 
@@ -222,9 +213,10 @@ var convertEnvelope = function (orgname) {
     let outputFileName = './'+orgname+'_update_in_envelope.pb';
     // Exceute crypto 
 
-    const { exec } = require('child_process');
-    const testscript = exec('configtxlator proto_encode --input '+envelopeFileName+' --type common.Envelope --output '+outputFileName);
+    const { execSync } = require('child_process');
+    const testscript = execSync('configtxlator proto_encode --input '+envelopeFileName+' --type common.Envelope --output '+outputFileName);
 
+    /*
     testscript.stdout.on('data', function (data) {
         console.log(data);
         console.log('Created Envelope PB')
@@ -233,19 +225,12 @@ var convertEnvelope = function (orgname) {
     testscript.stderr.on('data', function (data) {
         console.log(data);
         console.log('PB Envelope failed... ');
-    });
+    }); 
+    */
 
     return "PB Envelope created "+outputFileName+"...";
 
 }
-
-
-
-
-
-
-
-
 
 
 var recurse = function(obj) {

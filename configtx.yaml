@@ -2,8 +2,8 @@
   Organizations: 
     - 
       &Org 
-        Name: "Org4MSP"
-        ID: "Org4MSP"
+        Name: "Org7MSP"
+        ID: "Org7MSP"
         MSPDir: "crypto-config/peerOrganizations/example.com/msp"
         AnchorPeers: 
           - 

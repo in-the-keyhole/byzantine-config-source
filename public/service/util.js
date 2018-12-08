@@ -26,7 +26,8 @@ logger.setLevel(config.loglevel);
 var channelid = null;
 var client = null;
 var peer = null;
-var path = path.join(__dirname, config.wallet_path);
+//var path = path.join(__dirname, config.wallet_path);
+var path = path.join(__dirname, global.config.wallet_path);
 var org = config.org;
 var pool = [];
 
@@ -38,9 +39,9 @@ var connectChannel = function (channel_id) {
         client = new hfc();
         return hfc.newDefaultKeyValueStore({ path: path });
     }).then((wallet) => {
-        logger.info("Set wallet path, and associate user ", config.user_id, " with application");
+        logger.info("Set wallet path, and associate user ", global.config.user_id, " with application");
         client.setStateStore(wallet);
-        return client.getUserContext(config.user_id, true);
+        return client.getUserContext(global.config.user_id, true);
     }).then((user) => {
   
         console.log("POOL"+pool.length);

@@ -4,6 +4,7 @@ import './App.css';
 import Organizations from './view/Organizations.js';
 import AddOrganization from './view/AddOrganization.js';
 import GenerateArtifacts from './view/GenerateArtifacts.js';
+import PeerConnection from './view/PeerConnection.js';
 
 import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
 
@@ -44,10 +45,11 @@ class App extends Component {
     const Main = ({ numberofblocks }) => (
       <main>
     <Switch>
-      <Route exact path="/" component={Organizations} />
+      <Route exact path="/" component={PeerConnection} />
       <Route exact path="/org" component={Organizations} />
       <Route exact path="/addorg" component={AddOrganization} />
       <Route exact path="/genartifacts" component={GenerateArtifacts} />
+      <Route exact path="/connection" component={PeerConnection} />
      
     </Switch>
       </main>
