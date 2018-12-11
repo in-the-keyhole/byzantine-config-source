@@ -31,7 +31,9 @@ var getBlockInfo = function (channel_id) {
 
     }).then((c) => {
 
+
         c.initialize();
+      
 
         return c.queryInfo();
     }).then((query_responses) => {
@@ -45,8 +47,10 @@ var getBlockInfo = function (channel_id) {
 
         return result;
     }).catch((err) => {
-        logger.error("Caught Error", err);
+        logger.error("Block INFO Catch", err);
         util.removeChannel(channel_id);
+        throw err;
+
     });
 
 };

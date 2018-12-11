@@ -27,12 +27,16 @@ var channelid = null;
 var client = null;
 var peer = null;
 //var path = path.join(__dirname, config.wallet_path);
-var path = path.join(__dirname, global.config.wallet_path);
+//var path = path.join(__dirname, global.config.wallet_path);
+//var path = global.config.wallet_path;
 var org = config.org;
 var pool = [];
 
 
 var connectChannel = function (channel_id) {
+
+
+    var path = global.config.wallet_path;
 
     return Promise.resolve().then(() => {
         logger.info("Create a client and set the wallet location");
@@ -49,8 +53,9 @@ var connectChannel = function (channel_id) {
        var channel = get(channel_id);
 
          logger.debug("Check user is enrolled, and set a query URL in the network");
-        if (user === undefined || user.isEnrolled() === false) {
+        if (user === undefined || user === null || user.isEnrolled() === false) {
            logger.error("User not defined, or not enrolled - error");
+           throw "ERROR: User Not Enrolled";
         }
 
     
@@ -106,6 +111,7 @@ var connectChannel = function (channel_id) {
 
     ).catch((err) => {
         logger.error("Caught Error", err);
+        throw err;
     });
 
 };

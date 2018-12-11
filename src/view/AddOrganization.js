@@ -25,7 +25,7 @@ class AddOrganization extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { namee: "", domain: "", peers: 2, users: 1 };
+        this.state = { name: "", domain: "", peers: 2, users: 1 };
 
     }
 
@@ -37,10 +37,21 @@ class AddOrganization extends Component {
     generateClick = e => {
         e.preventDefault();
 
+        // validate
+        let status = null;
+
+        if (this.state.name == undefined || this.state.name == "") {
+
+           status = "Organization name required ";
+
+        } else {
+
         global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
 
-        var status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+           status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+
+        }
 
         this.setState({ status: status });
 
@@ -50,21 +61,9 @@ class AddOrganization extends Component {
         e.preventDefault();
 
 
-      /*  global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
-        var ipcRenderer = electron.ipcRenderer;
 
-        var response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
+        this.props.history.push("/genartifacts");
 
-        if (response.indexOf("ERROR:") >= 0 ) {
-            this.set.setState({ status: response });
-        } else {   
-            global.orgjson = response;
-            this.props.history.push("/genartifacts");
-         }  */
-         
-         
-         this.props.history.push("/genartifacts");
-  
     }
 
 
@@ -79,7 +78,7 @@ class AddOrganization extends Component {
             if (this.state.status.indexOf('SUCCESS:') >= 0) {
 
                 Status = <div class="alert alert-success" role="alert">
-                 {this.state.status}...  <button id="genconfigtx" onClick={this.addArtifactsClick} name="genconfig" className="btn btn-primary">Generate Config Tx</button>
+                    {this.state.status}...  <button id="genconfigtx" onClick={this.addArtifactsClick} name="genconfig" className="btn btn-primary">Generate Config Tx</button>
                 </div>
 
             } else {
@@ -95,62 +94,62 @@ class AddOrganization extends Component {
 
         return (
 
-    
-                <form className="form-horizontal">
-                    <fieldset>
-                        <legend>Add Org, Generate Crypto Material</legend>
-                        <div className="control-group">
-                            <label className="control-label" for="name">Name:</label>
-                            <div className="controls">
-                                <input id="name" name="textinput-0" type="text" onChange={this.handleChange} value={this.state.name} placeholder="Org Name" className="input-xlarge" />
-                                <p className="help-block">Orgnization name</p>
-                            </div>
+
+            <form className="form-horizontal">
+                <fieldset>
+                    <legend>Add Org, Generate Crypto Material</legend>
+                    <div className="control-group">
+                        <label className="control-label" for="name">Name:</label>
+                        <div className="controls">
+                            <input id="name" name="textinput-0" type="text" onChange={this.handleChange} value={this.state.name} placeholder="Org Name" className="input-xlarge" />
+                            <p className="help-block">Orgnization name</p>
                         </div>
+                    </div>
 
-                        <div className="control-group">
-                            <label class="control-label" for="domain">Domain:</label>
-                            <div className="controls">
-                                <input id="domain" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.domain} placeholder="Org Domain" className="input-xlarge" />
-                                <p className="help-block">Domain</p>
-                            </div>
+                    <div className="control-group">
+                        <label class="control-label" for="domain">Domain:</label>
+                        <div className="controls">
+                            <input id="domain" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.domain} placeholder="Org Domain" className="input-xlarge" />
+                            <p className="help-block">Domain</p>
                         </div>
+                    </div>
 
-                        <div className="control-group">
-                            <label class="control-label" for="peers">Peers:</label>
-                            <div className="controls">
-                                <input id="peers" size="4" name="textinput-1" type="text" onChange={this.handleChange} value={this.peers} placeholder="2" className="input-xlarge" />
-                                <p className="help-block">Also referred to as templates</p>
-                            </div>
+                    <div className="control-group">
+                        <label class="control-label" for="peers">Peers:</label>
+                        <div className="controls">
+                            <input id="peers" size="4" name="textinput-1" type="text" onChange={this.handleChange} value={this.peers} placeholder="2" className="input-xlarge" />
+                            <p className="help-block">Also referred to as templates</p>
                         </div>
+                    </div>
 
 
-                        <div className="control-group">
-                            <label class="control-label" for="users">Users:</label>
-                            <div className="controls">
-                                <input id="users" size="4" name="textinput-1" type="text" onChange={this.handleChange} value={this.users} placeholder="1" className="input-xlarge" />
-                            </div>
+                    <div className="control-group">
+                        <label class="control-label" for="users">Users:</label>
+                        <div className="controls">
+                            <input id="users" size="4" name="textinput-1" type="text" onChange={this.handleChange} value={this.users} placeholder="1" className="input-xlarge" />
                         </div>
+                    </div>
 
 
-                        <div className="control-group">
-                            <label className="control-label" for="doublebutton-0"></label>
-                            <div className="controls">
-                                <button id="generate" onClick={this.generateClick} name="doublebutton-0" className="btn btn-success">Generate Org Artifacts</button>
+                    <div className="control-group">
+                        <label className="control-label" for="doublebutton-0"></label>
+                        <div className="controls">
+                            <button id="generate" onClick={this.generateClick} name="doublebutton-0" className="btn btn-success">Generate Org Artifacts</button>
 
-                            </div>
                         </div>
+                    </div>
 
-                         <div className="control-group">
-                            <label className="control-label" for="doublebutton-0"></label>
-                            <div className="controls">
-                                {Status}
-                            </div>
+                    <div className="control-group">
+                        <label className="control-label" for="doublebutton-0"></label>
+                        <div className="controls">
+                            {Status}
                         </div>
+                    </div>
 
-                    </fieldset>
-                </form>
+                </fieldset>
+            </form>
 
-             
+
 
 
 

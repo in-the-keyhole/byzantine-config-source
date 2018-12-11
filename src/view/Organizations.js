@@ -37,36 +37,53 @@ class Organizations extends Component {
 
   componentDidMount() {
 
-  // In renderer process (web page).
-  //const {ipcRenderer} = require('electron')
-  var ipcRenderer = electron.ipcRenderer;
-  var block = ipcRenderer.sendSync('block', 'blockargs');
-  var json = JSON.parse(block);
-  let app = json.data.data[0].payload.data.config.channel_group.groups.Application.groups;
+    // In renderer process (web page).
+    //const {ipcRenderer} = require('electron')
+    var ipcRenderer = electron.ipcRenderer;
+    var block = ipcRenderer.sendSync('block', 'blockargs');
+    var json = JSON.parse(block);
+   
+    this.getConfigData(json);
 
-  let orgs = [];
-      for (var p in app) {
-        let org = {};
-        org.name = p;
-        orgs.push(org);
-    }
-
-    this.setState({orgs:orgs});
-
-/*
-    blockservice.getBlock('mychannel', 1).then(function (res) {
-      const json = JSON.parse(JSON.stringify(res.data));
-      this.state = { block: JSON.stringify(json) };
-
-    });
-*/
 
   }
 
-  clickAddOrg = e => { 
-     e.preventDefault();
-    this.props.history.push("/addorg");
+
+  getConfigData(json) {
+
+    let block = parseInt(json.header.number) + 1;
+    let ordaddr = json.data.data[0].payload.data.config.channel_group.values.OrdererAddresses.value.addresses;
+    let hashingalgo = json.data.data[0].payload.data.config.channel_group.values.HashingAlgorithm.value.name;
+    let consortium = json.data.data[0].payload.data.config.channel_group.values.Consortium.value.name;
+    let batchsize = json.data.data[0].payload.data.config.channel_group.groups.Orderer.values.BatchSize.value.max_message_count;
+    let batchtimeout = json.data.data[0].payload.data.config.channel_group.groups.Orderer.values.BatchTimeout.value.timeout;
+    let consensustype = json.data.data[0].payload.data.config.channel_group.groups.Orderer.values.ConsensusType.value.type;
+    let lastupdate = json.data.data[0].payload.header.channel_header.timestamp;
+    let app = json.data.data[0].payload.data.config.channel_group.groups.Application.groups;
+    let pol = json.data.data[0].payload.data.config.channel_group.policies;
   
+    let orgs = [];
+    for (var p in app) {
+      let org = {};
+      org.name = p;
+      orgs.push(org);
+    }
+
+    let policies = [];
+    for (var poly in pol) {
+      pol[poly].name = poly;
+      policies.push(pol[poly]);
+    }
+
+
+    this.setState({ block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+
+  }
+
+  clickAddOrg = e => {
+    e.preventDefault();
+    this.props.history.push("/addorg");
+
   }
 
 
@@ -82,14 +99,90 @@ class Organizations extends Component {
     }
 
 
+    let policies = [];
+
+    if (this.state.policies) {
+
+      this.state.policies.forEach((p) => {
+        policies.push(<div><b> {p.name}  Policy</b>: {p.policy.type}, {p.policy.value.rule} </div>);
+      }
+      );
+
+    }
+
+
     return (
-      <div className="card">
-        <div className="card-block">
-          <h3 className="card-title">Orgs</h3> <button onClick={this.clickAddOrg}>Add</button>
-        </div>
+      <div>
+        <legend>Orgs and Configuration  <button onClick={this.clickAddOrg}>Add</button></legend>
+      
         <ul className="list-group list-group-flush">{orgs}</ul>
+  
+      <div className="container">
+
+        <div className="row bg-info">
+          <div className="col-md-12"> <h3><b>Current Configuration as of:</b> {this.state.lastupdate}</h3> </div>
+        </div>
+
+        <div className="row">
+          <div className="col-md-10"> <h3><b>Consortium:</b> {this.state.consortium}</h3> </div>
+          <div className="col-md-2"> <h3><b>Block:</b> {this.state.block} </h3></div>
+        </div>
+
+        <div className="row">
+
+
+          <div className="col-md-4">
+
+            <div className="card">
+              <div className="card-block">
+                <h4 className="card-title">Organizations</h4>
+              </div>
+              <div className="col-md-12">
+                {orgs}
+              </div>
+            </div>
+          </div>
+
+
+          <div className="col-md-4">
+
+            <div className="card">
+              <div className="card-block">
+                <h4 className="card-title">Orderer</h4>
+              </div>
+              <div className="col-md-12">
+                <div><b>Orderers:</b> {this.state.orderers}</div>
+                <div><b>Consensus Type:</b> {this.state.consensustype}</div>
+                <div><b>Batch Size:</b> {this.state.batchsize}</div>
+                <div><b>Batch Timeout:</b> {this.state.batchtimeout}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+
+            <div className="card">
+              <div className="card-block">
+                <h4 className="card-title">Channel</h4>
+              </div>
+              <div className="col-md-12">
+
+                <div>
+                  <b>Hashing Algorithm:</b> {this.state.hashingalgorithm}
+                </div>
+                <div>
+                  <b>Batch Size:</b> {this.state.batchsize}
+                </div>
+                {policies}
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-    );
+      </div>);
+
+
   }
 }
 

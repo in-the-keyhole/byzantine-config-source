@@ -21,7 +21,6 @@ import {
 
 const electron = window.require('electron');
 const fs = electron.remote.require('fs');
-//const fs = require('fs');
 
 class App extends Component {
 
@@ -37,9 +36,6 @@ class App extends Component {
 
 
   render() {
-
-   // var blockservice = electron.remote.getGlobal('blockservice');
-   // const res =  global.blockservice;
 
     this.read();
     const Main = ({ numberofblocks }) => (
@@ -66,7 +62,7 @@ class App extends Component {
                   <Navbar.Header>
                     <Navbar.Brand>
                       <a href="/">
-                        KHS Org Manager
+                        HLF Org Manager
                       </a>
                     </Navbar.Brand>
                   </Navbar.Header>
@@ -75,28 +71,14 @@ class App extends Component {
                      
                       <NavItem
                         eventKey={3}
-                        href="/org"
-                        to="/org"
+                        href="/"
+                        to="/"
                         componentClass={Link}
                       >
-                        Organizations
+                        Connect
                       </NavItem>
-                      <NavItem
-                        eventKey={3}
-                        href="/channel"
-                        to="/channel"
-                        componentClass={Link}
-                      >
-                        Blocks
-                      </NavItem>
-                      <NavItem
-                        eventKey={5}
-                        href="/metrics"
-                        to="/metrics"
-                        componentClass={Link}
-                      >
-                        Metrics
-                      </NavItem>
+                     
+                      
                     </Nav>
                   </Navbar.Collapse>
                 </Navbar>

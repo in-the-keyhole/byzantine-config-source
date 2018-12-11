@@ -274,8 +274,17 @@ class AddConfigTx extends Component {
         return (
 
             <div>
-                <div> Generating Artifacts for new Organization : {this.state.name} </div>
+                <legend>Generating Artifacts for new Organization : {this.state.name}</legend>
                 <div> <ul> {opslist} </ul>  </div>
+
+                <legend>Crypto Elements generated at : {this.state.name}</legend>    
+
+                
+
+
+                <legend>Updated Configuration with {this.state.name} organization </legend>       
+
+
             </div>
         );
     }

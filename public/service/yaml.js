@@ -48,17 +48,6 @@ var orgYaml = function (json) {
 
     const { execSync } = require('child_process');
     const testscript = execSync('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
-/*
-    testscript.stdout.on('data', function (data) {
-       // console.log(data);
-        console.log('Cryptogen Executed')
-    });
-
-    testscript.stderr.on('data', function (data) {
-       // console.log(data);
-        console.log('Cryptogen failed... ');
-    });
-*/
 
 
     return;
@@ -99,9 +88,6 @@ var configTx = function (json) {
 
     //get update JSON
 
-    // const { exec } = require('child_process');
-    // let output = './channel-artifacts/' + json.name + '.json';
-    // const testscript = exec('configtxgen -printOrg '+json.name+'MSP > ./channel-artifacts/'+json.name+'.json');
 
     return new Promise((resolve, reject) => {
 
