@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "asn1.js": "^5.0.1",
     "axios": "^0.16.2",
     "electron-debug": "^2.0.0",
     "electron-is-dev": "^1.0.1",

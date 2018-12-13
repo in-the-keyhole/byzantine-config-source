@@ -44,12 +44,20 @@ class AddOrganization extends Component {
 
            status = "Organization name required ";
 
+        } else if (this.state.domain == undefined || this.state.domain == "") {
+            
+            status = "Domain name required ";
+            
         } else {
 
         global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
 
            status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+
+           
+           this.props.history.push("/genartifacts");
+
 
         }
 

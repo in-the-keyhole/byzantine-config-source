@@ -18,7 +18,7 @@ import React, { Component } from "react";
 import axios from "axios";
 const electron = window.require('electron');
 const remote = electron.remote;
-const blockservice = remote.getGlobal("blockservice");
+const {dialog} = remote;
 
 
 class AddConfigTx extends Component {
@@ -39,10 +39,11 @@ class AddConfigTx extends Component {
         let current = "";
         var ipcRenderer = electron.ipcRenderer;
 
-        var response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
+       // let response = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+        let response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
 
-        if (response.indexOf("ERROR:") >= 0) {
-            current = "ERROR generations Organization JSON Update...";
+        if (response.indexOf("ERROR") >= 0) {
+            current = "ERROR generating Organization JSON Update...";
 
         } else {
             global.orgjson = response;
@@ -64,6 +65,11 @@ class AddConfigTx extends Component {
         this.convertEnvelopeToPb();
        
 
+    }
+
+    cryptodirClick = e => {
+        e.preventDefault();
+        let dir = dialog.showOpenDialog({defaultPath: global.config.crypto_config  ,properties: ['openFile', 'openDirectory']});
     }
 
 
@@ -253,12 +259,6 @@ class AddConfigTx extends Component {
 
 
 
-
-
-
-
-
-
     render() {
 
         let opslist = [];
@@ -274,15 +274,17 @@ class AddConfigTx extends Component {
         return (
 
             <div>
-                <legend>Generating Artifacts for new Organization : {this.state.name}</legend>
+                <legend>Generating Artifacts for new Organization : <b> {this.state.name} </b> </legend>
                 <div> <ul> {opslist} </ul>  </div>
 
-                <legend>Crypto Elements generated at : {this.state.name}</legend>    
+                <legend>Crypto Elements generated for : <b> {this.state.name} </b> </legend>    
 
-                
+                <blockquote>
+                    Cryptographic Keys and Certs for org have been generated and can be found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">channel-artifacts</button> 
 
-
-                <legend>Updated Configuration with {this.state.name} organization </legend>       
+                </blockquote>
+    
+                <legend>Updated Configuration PB Envelope created: <b> {this.state.name}_update_in_envelope.pb </b>  </legend>       
 
 
             </div>

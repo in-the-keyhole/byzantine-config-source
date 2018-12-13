@@ -70,7 +70,10 @@ function createWindow() {
 
     console.log("ADD TX = " + arg);
 
-    yaml.configTx(json).then((r) => {
+    event.returnValue = yaml.configTx(json);
+    
+    
+    /*.then((r) => {
       event.returnValue = r;
 
     }).catch((e) => {
@@ -78,7 +81,7 @@ function createWindow() {
       logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
       throw e;
 
-    });
+    }); */
 
 
   });
@@ -197,25 +200,30 @@ function createWindow() {
         cryptopath = path.join(__dirname, json.crypto);
     }
 
+    // calc working dir.. 
+    let path = cryptopath.split("/");
+    let working_dir = path.slice(0, path.length-1).join("/");
+  
     global.config = {
       network_url: json.peer,
       user_id: json.userid,
       wallet_path: credspath,
-      crypto_config: cryptopath
+      crypto_config: cryptopath,
+      working_dir: working_dir
     };
 
     let blockinfo = require('./service/blockinfo.js');
     blockinfo.getBlockInfo('mychannel').then((info) => {
 
       if (info.indexOf("ERROR:") >= 0) {
-        return event.returnValue = info;
+        return event.returnValue = "Error connecting and receiving block";
       }
 
       const json = JSON.parse(info);
       const blocks = json.height.low;
       global.blocks = blocks;
 
-      event.returnValue = info;
+      event.returnValue = JSON.stringify(global.config);
 
 
     }).catch((err) => {
@@ -236,6 +244,7 @@ function createWindow() {
     let orgjson = fs.readFileSync(filepath, 'utf8');
 
 
+    console.log("BUG "+filepath+" = "+orgjson);
     // convert string to JSON Object
     var o = JSON.parse(orgjson);
 

@@ -46,6 +46,9 @@ class App extends Component {
       <Route exact path="/addorg" component={AddOrganization} />
       <Route exact path="/genartifacts" component={GenerateArtifacts} />
       <Route exact path="/connection" component={PeerConnection} />
+      <Route path='/'>
+          <Redirect to="/connection" />
+      </Route>
      
     </Switch>
       </main>
@@ -92,6 +95,7 @@ class App extends Component {
               </div>
             </div>
           </BrowserRouter>
+         
         </div>
       );
       

@@ -39,10 +39,7 @@ var orgYaml = function (json) {
     var fs = require('fs');
     var filepath = config.yaml_dir + "/" + json.name + ".yaml";
 
-    fs.writeFile(filepath, yaml, (err) => {
-        if (err) throw err;
-        logger.info("The file was succesfully saved!");
-    });
+    fs.writeFileSync(filepath, yaml);
 
     // Exceute crypto 
 
@@ -79,31 +76,49 @@ var configTx = function (json) {
     var fs = require('fs');
     var filepath = "./configtx.yaml";
 
-    fs.writeFile(filepath, yaml, (err) => {
-        if (err) throw err;
-        logger.info("The file was succesfully saved!");
-    });
+    fs.writeFileSync(filepath, yaml);
+
 
     // execute config    
 
     //get update JSON
 
+    const { execSync } = require('child_process');
+    let output = './channel-artifacts/' + json.name + '.json';
 
+    const configtxgen = execSync('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
+    
+    console.log("CONFIG TX Gen = "+configtxgen);
+    let contents = fs.readFileSync(output,'utf8');
+    console.log("ORG JSON = "+contents);
+
+    return contents;
+
+/*
     return new Promise((resolve, reject) => {
 
-        const { exec } = require('child_process');
+        const { execSync } = require('child_process');
         let output = './channel-artifacts/' + json.name + '.json';
 
-        const configtxgen = exec('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output,
-        (error, stdout, stderr) => {
+        const configtxgen = execSync('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
+        
+        console.log("CONFIG TX Gen = "+configtxgen);
+        let contents = fs.readFileSync(output,'utf8');
+        console.log("ORG JSON = "+contents);
+
+        return resolve(contents);    
+        
+      /*  (error, stdout, stderr) => {
             
             let contents = fs.readFileSync(output,'utf8');
+            console.log("ORG JSON = "+contents);
+
             return resolve(contents);    
         }
         );
     
 
-    });
+    }); */
 }
 
 

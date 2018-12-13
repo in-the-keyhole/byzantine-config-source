@@ -27,7 +27,7 @@ class PeerConnection extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { userid: "PeerAdmin", peer: "grpc://localhost:7051", creds: "../hfc-key-store", crypto: "../crypto-config" };
+        this.state = { userid: "PeerAdmin", peer: "grpc://localhost:7051", creds: "", crypto: "" };
 
     }
 
@@ -39,34 +39,54 @@ class PeerConnection extends Component {
    
     connectClick = e => {
         e.preventDefault();
+
+
+        // validate 
+
+        if (this.state.crypto == "") {
+
+            this.state.status = "Crpyto Directory Required, pleasee select above...";
+       
+        }  else if (this.state.creds == "") {
+            this.state.status =  "Credentials keystore directory required, please select above...";
+        }  else {
+
+
+
         var ipcRenderer = electron.ipcRenderer;
         var response = ipcRenderer.sendSync('connect', JSON.stringify(this.state));
+    
+        global.config = JSON.parse(response);
 
         if (response.indexOf("ERROR:") >= 0) {
 
             this.setState( {status: response});
 
-        } else {  
+        } else  {  
 
           this.props.history.push("/org");
 
         }    
 
+    }
   
     }
 
     dirClick = e => {
         e.preventDefault();
         let dir = dialog.showOpenDialog({properties: ['openFile', 'openDirectory']});
-        this.setState({creds: dir[0]});
+        if (dir) {
+         this.setState({creds: dir[0]});
+        }
 
     }
 
     dirCryptoClick = e => {
         e.preventDefault();
         let dir = dialog.showOpenDialog({properties: ['openFile', 'openDirectory']});
-        this.setState({crypto: dir[0]});
-
+        if (dir) {
+         this.setState({crypto: dir[0]});
+        }    
     }
 
 
@@ -108,7 +128,7 @@ class PeerConnection extends Component {
                         <div className="control-group">
                             <label class="control-label" for="creds">Credential Keystore Path:</label>
                             <div className="controls">
-                            <button id="pickdir" onClick={this.dirClick} name="doublebutton-0" className="btn btn-success">Directory</button>   <input id="creds" size="80" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.creds}  className="input-xlarge" />
+                            <button id="pickdir" onClick={this.dirClick} name="doublebutton-0" className="btn btn-success">Directory</button>   <input id="creds" size="80" readonly="true" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.creds}  className="input-xlarge" />
                                 <p className="help-block">Directory path where your Admin Public/Private Key and Userid Digital Cert is located</p>
                             </div>
                         </div>
@@ -117,7 +137,7 @@ class PeerConnection extends Component {
                         <div className="control-group">
                             <label class="control-label" for="creds">Crypto Config Path:</label>
                             <div className="controls">
-                            <button id="pickdir" onClick={this.dirCryptoClick} name="doublebutton-0" className="btn btn-success">Directory</button>   <input id="crypto" size="80" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.crypto}  className="input-xlarge" />
+                            <button id="pickdir" onClick={this.dirCryptoClick} name="doublebutton-0" className="btn btn-success">Directory</button>   <input id="crypto" readonly="true" size="80" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.crypto}  className="input-xlarge" />
                                 <p className="help-block">Directory path where Crypto Config resources will be generared</p>
                             </div>
                         </div>

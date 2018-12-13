@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "keyhole"
+      Domain: "keyhole.com"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

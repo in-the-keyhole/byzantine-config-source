@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "Orga"
+      Domain: "examplea.com"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1
