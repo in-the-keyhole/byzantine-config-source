@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "Org7"
+      Domain: "org7.example"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

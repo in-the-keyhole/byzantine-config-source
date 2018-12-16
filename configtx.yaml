@@ -4,8 +4,8 @@
       &keyhol 
         Name: "keyholeMSP"
         ID: "keyholeMSP"
-        MSPDir: "crypto-config/peerOrganizations/keyhole.com/msp"
+        MSPDir: "crypto-config/peerOrganizations/example.keyhole/msp"
         AnchorPeers: 
           - 
-            Host: "peer0.keyhole.com"
+            Host: "peer0.example.keyhole"
             port: 7051

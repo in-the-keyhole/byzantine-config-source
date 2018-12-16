@@ -23,7 +23,6 @@ module.exports = {
     user_id: process.env.USERID || "PeerAdmin",
     network_url: process.env.NETWORK_URL || "grpc://localhost:7051",
     event_url: process.env.NETWORK_URL || "grpc://localhost:7052",
-    yaml_dir: process.env.YAML_DIR || "yaml",
     channel_artifacts_dir: process.env.CHANNEL_ARTIFACTS_DIR || "channel-artifacts"
     
 }

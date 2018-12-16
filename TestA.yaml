@@ -1,0 +1,10 @@
+---
+  PeerOrgs: 
+    - 
+      Name: "TestA"
+      Domain: "test.example"
+      EnableNodeOUs: true
+      Template: 
+        Count: 2
+      Users: 
+        Count: 1

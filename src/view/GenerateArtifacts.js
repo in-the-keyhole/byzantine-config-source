@@ -18,7 +18,7 @@ import React, { Component } from "react";
 import axios from "axios";
 const electron = window.require('electron');
 const remote = electron.remote;
-const {dialog} = remote;
+const { dialog } = remote;
 
 
 class AddConfigTx extends Component {
@@ -31,6 +31,8 @@ class AddConfigTx extends Component {
         this.configblock = null;
         this.orgjson = null;
         this.modifiedjson = null;
+        this.block = null;
+        this.setState({policies: null});
 
     }
 
@@ -39,7 +41,7 @@ class AddConfigTx extends Component {
         let current = "";
         var ipcRenderer = electron.ipcRenderer;
 
-       // let response = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
+        // let response = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
         let response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
 
         if (response.indexOf("ERROR") >= 0) {
@@ -63,13 +65,18 @@ class AddConfigTx extends Component {
         this.decodeToJson();
         this.createEnvelope();
         this.convertEnvelopeToPb();
-       
+
 
     }
 
     cryptodirClick = e => {
         e.preventDefault();
-        let dir = dialog.showOpenDialog({defaultPath: global.config.crypto_config  ,properties: ['openFile', 'openDirectory']});
+        let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
+    }
+
+    pbdirClick = e => {
+        e.preventDefault();
+        let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
     }
 
 
@@ -84,9 +91,23 @@ class AddConfigTx extends Component {
             current = "ERROR Getting Config Block";
 
         } else {
+
+           
+
+            let block = JSON.parse(response);
+
+            let pol = block.data.data[0].payload.data.config.channel_group.policies;
+
+            let policies = [];
+            for (var poly in pol) {
+                pol[poly].name = poly;
+                policies.push(pol[poly]);
+            }
+    
+            this.state.policies = policies;
+
             this.configblock = JSON.parse(response);
             current = "Configuration Block retrrieved...";
-            console.log("Config Block " + this.configblock);
 
         }
 
@@ -102,8 +123,8 @@ class AddConfigTx extends Component {
 
         var ipcRenderer = electron.ipcRenderer;
         this.configblock = this.configblock.data.data[0].payload.data.config;
-       // let tempblock = this.configblock.data.data[0].payload.data.config;
-       // this.configblock = { data: { data: [ { payload: { data: { config: tempblock  }     }   } ]}};
+        // let tempblock = this.configblock.data.data[0].payload.data.config;
+        // this.configblock = { data: { data: [ { payload: { data: { config: tempblock  }     }   } ]}};
 
         var response = ipcRenderer.sendSync('block', JSON.stringify(this.configblock));
 
@@ -117,7 +138,6 @@ class AddConfigTx extends Component {
     mergeCrypto() {
 
         this.modifiedjson = JSON.parse(JSON.stringify(this.configblock));
-        // this.modifiedjson.channel_group.groups.Application.groups[this.state.name + "MSP"] = this.orgjson;
 
         var ipcRenderer = electron.ipcRenderer;
         let current = null;
@@ -270,6 +290,17 @@ class AddConfigTx extends Component {
             );
         }
 
+        
+        let policyhtml = [];
+        if (this.state.policies) {
+    
+          this.state.policies.forEach((p) => {
+            policyhtml.push(<div><b> {p.name}  Policy</b>: {p.policy.type}, {p.policy.value.rule} </div>);
+          }
+          );
+    
+        }
+
 
         return (
 
@@ -277,16 +308,20 @@ class AddConfigTx extends Component {
                 <legend>Generating Artifacts for new Organization : <b> {this.state.name} </b> </legend>
                 <div> <ul> {opslist} </ul>  </div>
 
-                <legend>Crypto Elements generated for : <b> {this.state.name} </b> </legend>    
+                <legend>Crypto Elements generated for : <b> {this.state.name} </b> </legend>
 
                 <blockquote>
-                    Cryptographic Keys and Certs for org have been generated and can be found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">channel-artifacts</button> 
+                    Cryptographic Keys and Certs for org have been generated and can be found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">channel-artifacts</button>
 
                 </blockquote>
-    
-                <legend>Updated Configuration PB Envelope created: <b> {this.state.name}_update_in_envelope.pb </b>  </legend>       
 
+                <legend>Updated Configuration PB Envelope created: <b> {this.state.name}_update_in_envelope.pb </b>  </legend>
 
+                <blockquote>
+                    The new org <b>{this.state.name}</b> Configuration Update Transaction can found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">Config Block Envelope</button>
+                    <br />Based upon the channels policy, the following Organizations admins will need to sign before invoked against channel.
+                    <br /> Channel policies are: {policyhtml}
+                 </blockquote>
             </div>
         );
     }

@@ -37,14 +37,14 @@ var orgYaml = function (json) {
     // write to file system 
 
     var fs = require('fs');
-    var filepath = config.yaml_dir + "/" + json.name + ".yaml";
+    var filepath =  "./" + json.name + ".yaml";
 
     fs.writeFileSync(filepath, yaml);
 
     // Exceute crypto 
 
     const { execSync } = require('child_process');
-    const testscript = execSync('cryptogen generate --config=./' + config.yaml_dir + '/' + json.name + '.yaml');
+    const testscript = execSync('cryptogen generate --config=./' + './' + json.name + '.yaml');
 
 
     return;

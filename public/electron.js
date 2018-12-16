@@ -68,22 +68,9 @@ function createWindow() {
 
     let json = JSON.parse(arg);
 
-    console.log("ADD TX = " + arg);
-
     event.returnValue = yaml.configTx(json);
     
     
-    /*.then((r) => {
-      event.returnValue = r;
-
-    }).catch((e) => {
-      event.returnValue = "ERROR";
-      logger.info("ERROR: Configuration TX , make sure cryptogen binary is in the path. " + e);
-      throw e;
-
-    }); */
-
-
   });
 
   ipcMain.on('decodetojson', (event) => {
@@ -185,6 +172,19 @@ function createWindow() {
 
   });
 
+   
+  ipcMain.on('paths', (event) => {
+
+    let paths = null;
+    let userdata = electron.app.getPath('userData');
+    if (fs.existsSync(userdata+'managerpaths.json')) {
+       paths = fs.readFileSync('./managerpaths.json','utf8');
+    }
+    event.returnValue = paths;
+
+  });
+   
+
 
 
   ipcMain.on('connect', (event, jsonstring) => {
@@ -200,7 +200,8 @@ function createWindow() {
         cryptopath = path.join(__dirname, json.crypto);
     }
 
-    // calc working dir.. 
+    // calc working dir...
+  
     let path = cryptopath.split("/");
     let working_dir = path.slice(0, path.length-1).join("/");
   
@@ -212,11 +213,15 @@ function createWindow() {
       working_dir: working_dir
     };
 
+    // write selected paths
+    let userdata = electron.app.getPath('userData');
+    fs.writeFileSync(userdata+'managerpaths.json',JSON.stringify({crypto: cryptopath, creds: credspath}),);
+
     let blockinfo = require('./service/blockinfo.js');
     blockinfo.getBlockInfo('mychannel').then((info) => {
 
       if (info.indexOf("ERROR:") >= 0) {
-        return event.returnValue = "Error connecting and receiving block";
+        return  event.returnValue = "Error connecting and receiving block";
       }
 
       const json = JSON.parse(info);
@@ -285,7 +290,6 @@ function createWindow() {
 
 
   });
-
 
   //  END  });
 
