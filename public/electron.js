@@ -6,34 +6,24 @@ const path = require('path');
 const url = require('url');
 const isDev = require('electron-is-dev');
 const hfc = require('fabric-client');
-//const blockservice = require('./service/block.js');
-//const blockinfo = require('./service/blockinfo.js');
 const yaml = require('./service/yaml.js');
 var log4js = require('log4js');
 var logger = log4js.getLogger('service/electron.js');
 var fs = require('fs');
 var config = require('./config.js');
 
+var userpath = electron.app.getPath('userData');
+
 let mainWindow;
 
-//global.blockservice = blockservice;
 
 function createWindow() {
 
-  /*
-    blockinfo.getBlockInfo('mychannel').then((info) => {
-  
-      const json = JSON.parse(info);
-      const blocks = json.height.low;
-      global.blocks = blocks;
-  */
 
   mainWindow = new BrowserWindow({ width: 900, height: 860 });
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 
-  //const electron = window.require('electron');
-  //const remote = electron.remote;
   const { ipcMain } = require('electron');
 
   ipcMain.on('block', (event, arg) => {
@@ -75,7 +65,7 @@ function createWindow() {
 
   ipcMain.on('decodetojson', (event) => {
 
-    let pbfile = './' + global.orginfo.name + '_update';
+    let pbfile = userpath + '/' + global.orginfo.name + '_update';
     yaml.decodeToJson(pbfile);
     event.returnValue = 'pb file decoded to JSON ' + pbfile + '.json';
 
@@ -88,11 +78,11 @@ function createWindow() {
 
     // write to file
 
-    fs.writeFile('./modified.json', JSON.stringify(global.modifiedjson), (err) => {
+    fs.writeFile(userpath+'/modified.json', JSON.stringify(global.modifiedjson), (err) => {
       if (err) throw err;
       logger.info("The file was succesfully saved!");
 
-      event.returnValue = yaml.convertToPb('./modified.json', './modified_config.pb');
+      event.returnValue = yaml.convertToPb(userpath+'/modified.json', userpath+'/modified_config.pb');
 
     });
 
@@ -106,11 +96,11 @@ function createWindow() {
     // write to file
 
     json = yaml.removeRuleType(json);
-    fs.writeFile('./config.json', JSON.stringify(json), (err) => {
+    fs.writeFile(userpath+'/config.json', JSON.stringify(json), (err) => {
       if (err) throw err;
       logger.info("The file was succesfully saved!");
 
-      event.returnValue = yaml.convertToPb('./config.json', './config.pb');
+      event.returnValue = yaml.convertToPb(userpath+'/config.json', userpath+'/config.pb');
 
     });
 
@@ -153,7 +143,7 @@ function createWindow() {
 
   ipcMain.on('computedelta', (event) => {
     let updated = global.orginfo.name + '_update.pb';
-    yaml.computeUpdateDeltaPb('mychannel', './config.pb', './modified_config.pb', './' + updated);
+    yaml.computeUpdateDeltaPb('mychannel', userpath+'/config.pb', userpath+'/modified_config.pb', userpath + '/' + updated);
     event.returnValue = 'Updated ' + updated + ' generated';
 
   });
@@ -176,9 +166,9 @@ function createWindow() {
   ipcMain.on('paths', (event) => {
 
     let paths = null;
-    let userdata = electron.app.getPath('userData');
-    if (fs.existsSync(userdata+'managerpaths.json')) {
-       paths = fs.readFileSync('./managerpaths.json','utf8');
+   // let userdata = electron.app.getPath('userData');
+    if (fs.existsSync(userpath+'/managerpaths.json')) {
+       paths = fs.readFileSync(userpath+'/managerpaths.json','utf8');
     }
     event.returnValue = paths;
 
@@ -200,6 +190,11 @@ function createWindow() {
         cryptopath = path.join(__dirname, json.crypto);
     }
 
+    let binpath = json.bin;
+    if (json.bin.indexOf('..') >= 0) {
+        cryptobin = path.join(__dirname, json.bin);
+    }
+
     // calc working dir...
   
     let path = cryptopath.split("/");
@@ -210,12 +205,13 @@ function createWindow() {
       user_id: json.userid,
       wallet_path: credspath,
       crypto_config: cryptopath,
-      working_dir: working_dir
+      working_dir: working_dir,
+      bin_path: binpath
     };
 
     // write selected paths
     let userdata = electron.app.getPath('userData');
-    fs.writeFileSync(userdata+'managerpaths.json',JSON.stringify({crypto: cryptopath, creds: credspath}),);
+    fs.writeFileSync(userdata+'/managerpaths.json',JSON.stringify({crypto: cryptopath, creds: credspath, bin: binpath}),);
 
     let blockinfo = require('./service/blockinfo.js');
     blockinfo.getBlockInfo('mychannel').then((info) => {
@@ -228,7 +224,24 @@ function createWindow() {
       const blocks = json.height.low;
       global.blocks = blocks;
 
+      //event.returnValue = JSON.stringify(global.config);
+
+      //  Make sure fabric tool binaries are in the path
+
+      let binpath = '"'+global.config.bin_path + '/cryptogen"';
+      const { execSync } = require('child_process');
+
+      try {
+      const testexec = execSync(binpath+' generate --help');
+      } catch (err) {
+          
+        event.returnValue = "ERROR: cannot not find Fabric cryptogen and configtxgen binaries, make sure binary path is valid";
+
+      };
+      
+
       event.returnValue = JSON.stringify(global.config);
+ 
 
 
     }).catch((err) => {
@@ -243,13 +256,10 @@ function createWindow() {
   ipcMain.on('mergecrypto', (event, jsonstring) => {
 
     let json = JSON.parse(jsonstring);
-
-    var filepath = config.channel_artifacts_dir + "/" + global.orginfo.name + ".json";
+    var filepath = userpath + "/channel-artifacts/" + global.orginfo.name + ".json";
 
     let orgjson = fs.readFileSync(filepath, 'utf8');
 
-
-    console.log("BUG "+filepath+" = "+orgjson);
     // convert string to JSON Object
     var o = JSON.parse(orgjson);
 
@@ -283,8 +293,6 @@ function createWindow() {
     global.modifiedjson.channel_group.policies.Readers.policy.type = 3;
 
     global.modifiedjson = yaml.removeRuleType(global.modifiedjson);
-
-    // console.log("MY JSON + "+JSON.stringify(global.modifiedjson));
 
     event.returnValue = "JSON Merged";
 

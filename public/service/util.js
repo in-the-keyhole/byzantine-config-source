@@ -18,17 +18,13 @@ var path = require('path');
 var hfc = require('fabric-client');
 var config = require('../config.js');
 var log4js = require('log4js');
-var logger = log4js.getLogger('app/util.js');
+var logger = log4js.getLogger('service/util.js');
 
 logger.setLevel(config.loglevel);
 
-//var channel = null;
 var channelid = null;
 var client = null;
 var peer = null;
-//var path = path.join(__dirname, config.wallet_path);
-//var path = path.join(__dirname, global.config.wallet_path);
-//var path = global.config.wallet_path;
 var org = config.org;
 var pool = [];
 
@@ -47,30 +43,28 @@ var connectChannel = function (channel_id) {
         client.setStateStore(wallet);
         return client.getUserContext(global.config.user_id, true);
     }).then((user) => {
-  
-        console.log("POOL"+pool.length);
 
-       var channel = get(channel_id);
+        var channel = get(channel_id);
 
-         logger.debug("Check user is enrolled, and set a query URL in the network");
+        logger.debug("Check user is enrolled, and set a query URL in the network");
         if (user === undefined || user === null || user.isEnrolled() === false) {
-           logger.error("User not defined, or not enrolled - error");
-           throw "ERROR: User Not Enrolled";
+            logger.error("User not defined, or not enrolled - error");
+            throw "ERROR: User Not Enrolled";
         }
 
-    
-        if (channel == null ) {
+
+        if (channel == null) {
 
             try {
 
-             channel = client.newChannel(channel_id);  
-             peer = client.newPeer(config.network_url);
-            } catch (error) { 
+                channel = client.newChannel(channel_id);
+                peer = client.newPeer(config.network_url);
+            } catch (error) {
 
-                  logger.error("Error creating new channel "+channel_id+error);
-                  return null;
+                logger.error("Error creating new channel " + channel_id + error);
+                return null;
 
-             }
+            }
 
 
             channel.addPeer(peer);
@@ -79,27 +73,25 @@ var connectChannel = function (channel_id) {
 
 
 
-            add(channel_id,channel);
+            add(channel_id, channel);
             // keep the block_reg to unregister with later if needed
             let block_reg = channel_event_hub.registerBlockEvent((block) => {
-               logger.debug('Successfully received the block event - ' + JSON.stringify(block));
-
-                //global.socket.emit('blocks', (Number(block.header.number) + 1));
+                logger.debug('Successfully received the block event - ' + JSON.stringify(block));
 
             }, (error) => {
-               logger.error('Failed to receive the block event ::' + error.toString());
-                
+                logger.error('Failed to receive the block event ::' + error.toString());
+
 
             });
 
-        
+
 
             channel_event_hub.connect(true);
 
 
-              logger.info("Is Event Hub Connected " + channel_event_hub.isconnected());
-              logger.info('Event Hub Registerd: ' + block_reg);
-           
+            logger.info("Is Event Hub Connected " + channel_event_hub.isconnected());
+            logger.info('Event Hub Registerd: ' + block_reg);
+
 
 
         }
@@ -119,31 +111,30 @@ var connectChannel = function (channel_id) {
 var get = function (cid) {
 
 
-    for (var i = 0 ; i < pool.length; i++) {
-    
-       if (pool[i].channelid === cid)
-           { return pool[i].channel; }   
-     
+    for (var i = 0; i < pool.length; i++) {
+
+        if (pool[i].channelid === cid) { return pool[i].channel; }
+
     }
 
     return null;
 
 }
 
-var add = function(id,c) {
+var add = function (id, c) {
 
     let add = true;
-    for (var i = 0; i < pool.length ; i++) {
-        if ( pool[i].channelid == id) {
+    for (var i = 0; i < pool.length; i++) {
+        if (pool[i].channelid == id) {
             add = false;
-            break; 
+            break;
         }
 
     }
 
     if (add) {
-      console.log("*** Item  not found adding");         
-      pool.push({channelid: id, channel: c} ); 
+        console.log("*** Item  not found adding");
+        pool.push({ channelid: id, channel: c });
     } else {
         console.log("****Item found")
     }
@@ -151,25 +142,24 @@ var add = function(id,c) {
 }
 
 
-var getClient = function() {
-        return client;
+var getClient = function () {
+    return client;
 }
 
-var removeChannel = function(cid) {
+var removeChannel = function (cid) {
 
     var index = -1;
-    for (var i = 0 ; i < pool.length; i++) {
-    
-        if (pool[i].channelid === cid)
-            { index = i }   
-      
-     }
- 
-     if (index >=0 ){
-         pool.splice(index,1);
-     }
+    for (var i = 0; i < pool.length; i++) {
 
-     return;
+        if (pool[i].channelid === cid) { index = i }
+
+    }
+
+    if (index >= 0) {
+        pool.splice(index, 1);
+    }
+
+    return;
 
 }
 

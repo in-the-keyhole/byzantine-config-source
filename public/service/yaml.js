@@ -18,10 +18,12 @@ var path = require('path');
 var hfc = require('fabric-client');
 var config = require('../config.js');
 var log4js = require('log4js');
-var logger = log4js.getLogger('service/yanml.js');
+var logger = log4js.getLogger('service/yaml.js');
 var yamljs = require('json2yaml');
 var fs = require('fs');
+const electron = require('electron');
 
+var userpath = electron.app.getPath('userData');
 
 logger.setLevel(config.loglevel);
 
@@ -37,16 +39,17 @@ var orgYaml = function (json) {
     // write to file system 
 
     var fs = require('fs');
-    var filepath =  "./" + json.name + ".yaml";
+    var filepath =  userpath +'/' + json.name + '.yaml';
 
     fs.writeFileSync(filepath, yaml);
 
     // Exceute crypto 
 
+    let binpath = '"'+global.config.bin_path + '/cryptogen"';
     const { execSync } = require('child_process');
-    const testscript = execSync('cryptogen generate --config=./' + './' + json.name + '.yaml');
+    const testscript = execSync(binpath+' generate --output="'+userpath+'/crypto-config" --config="' + userpath + '/' + json.name + '.yaml"');
 
-
+ 
     return;
 
 }
@@ -74,73 +77,39 @@ var configTx = function (json) {
     // write to file system 
 
     var fs = require('fs');
-    var filepath = "./configtx.yaml";
+    var filepath = userpath+"/configtx.yaml";
 
     fs.writeFileSync(filepath, yaml);
 
+    // create directory
 
-    // execute config    
+    if (!fs.existsSync(userpath+'/channel-artifacts')){
+        fs.mkdirSync(userpath+'/channel-artifacts');
+    }
 
     //get update JSON
 
     const { execSync } = require('child_process');
-    let output = './channel-artifacts/' + json.name + '.json';
+    let output = userpath+'/channel-artifacts/' + json.name + '.json';
+    let binpath = '"'+global.config.bin_path + '/configtxgen"';
 
-    const configtxgen = execSync('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
+    const configtxgen = execSync('export FABRIC_CFG_PATH="'+userpath+'" && '+binpath+' -printOrg ' + json.name + 'MSP > "' + output+'"');
     
-    console.log("CONFIG TX Gen = "+configtxgen);
     let contents = fs.readFileSync(output,'utf8');
-    console.log("ORG JSON = "+contents);
-
+  
     return contents;
-
-/*
-    return new Promise((resolve, reject) => {
-
-        const { execSync } = require('child_process');
-        let output = './channel-artifacts/' + json.name + '.json';
-
-        const configtxgen = execSync('export FABRIC_CFG_PATH=$PWD && configtxgen -printOrg ' + json.name + 'MSP > ' + output);
-        
-        console.log("CONFIG TX Gen = "+configtxgen);
-        let contents = fs.readFileSync(output,'utf8');
-        console.log("ORG JSON = "+contents);
-
-        return resolve(contents);    
-        
-      /*  (error, stdout, stderr) => {
-            
-            let contents = fs.readFileSync(output,'utf8');
-            console.log("ORG JSON = "+contents);
-
-            return resolve(contents);    
-        }
-        );
-    
-
-    }); */
 }
 
 
 
 var convertToPb = function (fileName,pbfileName) {
 
+
+    let binpath = '"'+global.config.bin_path + '/configtxlator"';
+
     // Exceute crypto 
-
     const { execSync } = require('child_process');
-    const testscript = execSync('configtxlator proto_encode --input '+fileName+' --type common.Config --output '+pbfileName);
-/*
-    testscript.stdout.on('data', function (data) {
-        console.log(data);
-        console.log('Converted to PB')
-    });
-
-    testscript.stderr.on('data', function (data) {
-        console.log(data);
-        console.log('PB Converstion failed... ');
-    });
-    */
-
+    const testscript = execSync(binpath+' proto_encode --input "'+fileName+'" --type common.Config --output "'+pbfileName+'"');
 
     return  "Converted "+fileName+" to Protocol Buffer";
 
@@ -152,20 +121,10 @@ var computeUpdateDeltaPb = function (channel,original,modified,updated) {
 
     // Exceute crypto 
 
+
+    let binpath = '"'+global.config.bin_path + '/configtxlator"';
     const { execSync } = require('child_process');
-    const testscript = execSync('configtxlator compute_update --channel_id '+channel+' --original '+original+' --updated '+modified+' --output '+updated);
-
-    /*
-    testscript.stdout.on('data', function (data) {
-        console.log(data);
-        console.log('Created Updated PB')
-    });
-
-    testscript.stderr.on('data', function (data) {
-        console.log(data);
-        console.log('PB Updated Converstion failed... ');
-    }); */
-
+    const testscript = execSync(binpath+' compute_update --channel_id '+channel+' --original "'+original+'" --updated "'+modified+'" --output "'+updated+'"');
 
     return  "Created Updated PB -"+updated;
 
@@ -176,8 +135,9 @@ var decodeToJson = function (input) {
 
     // Exceute crypto 
 
+    let binpath = '"'+global.config.bin_path + '/configtxlator"';
     const { execSync } = require('child_process');
-    const testscript = execSync('configtxlator proto_decode --input '+ input+'.pb --type common.ConfigUpdate --output '+input+'.json');
+    const testscript = execSync(binpath+' proto_decode --input "'+ input+'.pb" --type common.ConfigUpdate --output "'+input+'.json"');
 
     return  "Decoded to JSON -"+input;
 
@@ -187,15 +147,15 @@ var decodeToJson = function (input) {
 var createEnvelope = function (orgname) {
 
 
-    let envelopeFileName = './'+orgname+'_update_in_envelope.json';
-    let modified = './'+orgname+'_update.json';
+    let envelopeFileName = userpath+'/'+orgname+'_update_in_envelope.json';
+    let modified = userpath+'/'+orgname+'_update.json';
 
     let json = fs.readFileSync(modified, 'utf8');
     var o = JSON.parse(json);
 
     var envelope = {"payload":{"header":{"channel_header":{"channel_id":"mychannel", "type":2}},"data":{"config_update": o }}};
      
-    fs.writeFile(envelopeFileName, JSON.stringify(envelope), (err) => {
+    fs.writeFileSync(envelopeFileName, JSON.stringify(envelope), (err) => {
         if (err) throw err;
         logger.info("Envelope file was succesfully created!");
     
@@ -209,25 +169,13 @@ var createEnvelope = function (orgname) {
 
 var convertEnvelope = function (orgname) {
 
-
-    let envelopeFileName = './'+orgname+'_update_in_envelope.json';
-    let outputFileName = './'+orgname+'_update_in_envelope.pb';
+    let envelopeFileName = userpath+'/'+orgname+'_update_in_envelope.json';
+    let outputFileName = userpath+'/'+orgname+'_update_in_envelope.pb';
     // Exceute crypto 
 
+    let binpath = '"'+global.config.bin_path + '/configtxlator"';
     const { execSync } = require('child_process');
-    const testscript = execSync('configtxlator proto_encode --input '+envelopeFileName+' --type common.Envelope --output '+outputFileName);
-
-    /*
-    testscript.stdout.on('data', function (data) {
-        console.log(data);
-        console.log('Created Envelope PB')
-    });
-
-    testscript.stderr.on('data', function (data) {
-        console.log(data);
-        console.log('PB Envelope failed... ');
-    }); 
-    */
+    const testscript = execSync(binpath+' proto_encode --input "'+envelopeFileName+'" --type common.Envelope --output "'+outputFileName+'"');
 
     return "PB Envelope created "+outputFileName+"...";
 
@@ -242,7 +190,6 @@ var recurse = function(obj) {
         
         if (k == 'rules') {
           
-            console.log('Deleting '+obj[k][0].Type);
             delete obj[k][0].Type;
         }
 
@@ -331,12 +278,7 @@ var recurse = function(obj) {
         }    
         else {
             
-            if (k == 'root_certs') {
-                
-
-                console.log(k);
-            }
-          
+           
 
         }  
     }
@@ -354,7 +296,7 @@ var removeRuleType = function(json) {
 
     return result;
 }
-
+ 
 
 exports.orgYaml = orgYaml;
 exports.configTx = configTx;

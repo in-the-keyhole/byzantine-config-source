@@ -1,11 +1,11 @@
 ---
   Organizations: 
     - 
-      &keyhol 
-        Name: "keyholeMSP"
-        ID: "keyholeMSP"
-        MSPDir: "crypto-config/peerOrganizations/example.keyhole/msp"
+      &Org 
+        Name: "Org5MSP"
+        ID: "Org5MSP"
+        MSPDir: "crypto-config/peerOrganizations/example5.com/msp"
         AnchorPeers: 
           - 
-            Host: "peer0.example.keyhole"
+            Host: "peer0.example5.com"
             port: 7051

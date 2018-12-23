@@ -25,7 +25,7 @@ class PeerConnection extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { userid: "PeerAdmin", peer: "grpc://localhost:7051", creds: "", crypto: "" };
+        this.state = { userid: "PeerAdmin", peer: "grpc://localhost:7051", creds: "", crypto: "", bin: "" };
 
     }
 
@@ -41,7 +41,7 @@ class PeerConnection extends Component {
         let paths = JSON.parse(contents);
 
         if (paths && paths != null) {
-            this.setState({ creds: paths.creds, crypto: paths.crypto });
+            this.setState({ creds: paths.creds, crypto: paths.crypto, bin: paths.bin });
         }
 
     }
@@ -53,7 +53,7 @@ class PeerConnection extends Component {
 
         // validate 
 
-        if (this.state.crypto == "") {
+        if (this.state.bin == "") {
 
             this.state.status = "Crpyto Directory Required, pleasee select above...";
 
@@ -79,6 +79,8 @@ class PeerConnection extends Component {
 
         }
 
+
+
     }
 
     dirClick = e => {
@@ -90,13 +92,16 @@ class PeerConnection extends Component {
 
     }
 
-    dirCryptoClick = e => {
+    dirBinClick = e => {
         e.preventDefault();
         let dir = dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] });
         if (dir) {
-            this.setState({ crypto: dir[0] });
+            this.setState({ bin: dir[0] });
         }
     }
+
+    
+
 
 
     render() {
@@ -144,10 +149,10 @@ class PeerConnection extends Component {
 
 
                     <div className="control-group">
-                        <label class="control-label" for="creds">Crypto Config Path:</label>
+                        <label class="control-label" for="creds">Platform Binaries Path:</label>
                         <div className="controls">
-                            <button id="pickdir" onClick={this.dirCryptoClick} name="doublebutton-0" className="btn btn-info">Select Directory</button>   <input id="crypto" readonly="true" size="80" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.crypto} className="input-xlarge" />
-                            <p className="help-block">Directory path where Crypto Config resources will be generared</p>
+                            <button id="pickdir" onClick={this.dirBinClick} name="doublebutton-0" className="btn btn-info">Select Directory</button>   <input id="crypto" readonly="true" size="80" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.bin} className="input-xlarge" />
+                            <p className="help-block">Directory Path to Fabric platform specific Binaries (i.e. cryptogen, configtxgen)</p>
                         </div>
                     </div>
 

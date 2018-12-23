@@ -18,7 +18,7 @@ limitations under the License.
 
 
 var log4js = require('log4js');
-var logger = log4js.getLogger('app/block.js');
+var logger = log4js.getLogger('service/block.js');
 var util = require('./util.js');
 var sha = require('js-sha256');
 var asn = require('asn1.js');
@@ -57,8 +57,6 @@ var getConfigBlock = function (channelid, blocknumber) {
                 // Get last config block from Metadata
                 var configBlock = parseInt(json.metadata.metadata[1].value.index);
 
-
-                console.log("Config Block = " + configBlock);
 
                 return getBlock(channelid, configBlock);
 

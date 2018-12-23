@@ -21,6 +21,9 @@ const remote = electron.remote;
 const { dialog } = remote;
 
 
+var userpath = remote.app.getPath('userData');
+
+
 class AddConfigTx extends Component {
 
     constructor(props) {
@@ -71,12 +74,16 @@ class AddConfigTx extends Component {
 
     cryptodirClick = e => {
         e.preventDefault();
-        let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
+       // let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
+
+       let dir = dialog.showOpenDialog({ title: "Crypto Files", defaultPath: userpath + "/crypto-config/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] }); 
+
     }
 
     pbdirClick = e => {
         e.preventDefault();
-        let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
+        //let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
+        let dir = dialog.showOpenDialog({ title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
     }
 
 
@@ -123,9 +130,7 @@ class AddConfigTx extends Component {
 
         var ipcRenderer = electron.ipcRenderer;
         this.configblock = this.configblock.data.data[0].payload.data.config;
-        // let tempblock = this.configblock.data.data[0].payload.data.config;
-        // this.configblock = { data: { data: [ { payload: { data: { config: tempblock  }     }   } ]}};
-
+       
         var response = ipcRenderer.sendSync('block', JSON.stringify(this.configblock));
 
         let current = "Trimmed Configuration Block...";
@@ -318,7 +323,7 @@ class AddConfigTx extends Component {
                 <legend>Updated Configuration PB Envelope created: <b> {this.state.name}_update_in_envelope.pb </b>  </legend>
 
                 <blockquote>
-                    The new org <b>{this.state.name}</b> Configuration Update Transaction can found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">Config Block Envelope</button>
+                    The new org <b>{this.state.name}</b> Configuration Update Transaction can found here <button id="pickdir" onClick={this.pbdirClick} name="doublebutton-0" className="btn btn-success">Config Block Envelope</button>
                     <br />Based upon the channels policy, the following Organizations admins will need to sign before invoked against channel.
                     <br /> Channel policies are: {policyhtml}
                  </blockquote>

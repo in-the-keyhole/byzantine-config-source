@@ -22,9 +22,6 @@ const electron = window.require('electron');
 const remote = electron.remote;
 
 const blockservice = remote.getGlobal("blockservice");
-//const block = window.require('../service/block.js');
-
-
 
 class Organizations extends Component {
 

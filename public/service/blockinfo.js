@@ -19,7 +19,7 @@ var fs = require('fs');
 var util = require('util');
 var config = require('../config.js');
 var log4js = require('log4js');
-var logger = log4js.getLogger('app/blockinfo.js');
+var logger = log4js.getLogger('service/blockinfo.js');
 var util = require('./util.js');
 
 logger.setLevel(config.loglevel);
@@ -43,7 +43,7 @@ var getBlockInfo = function (channel_id) {
 
         }
 
-        logger.debug("returned from query" + result);
+        logger.debug("returned blockinfo result");
 
         return result;
     }).catch((err) => {
