@@ -22,6 +22,8 @@ Updating a Hyperledger Fabric network configuration and adding/updating organiza
 
 Byantine-config provides an executable `GUI` application that simplifies greatly updating and adding Organizations. When invoked an initial connect screen will appear.  You will need a network peer node address, Userid, access to your private key, and Fabric Binaries 
 
+![](images/config.png)
+
 
 Once connected the current configuration block is displayed... 
 
