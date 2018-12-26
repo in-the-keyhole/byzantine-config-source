@@ -27,8 +27,7 @@ Byantine-config provides an executable `GUI` application that simplifies greatly
 
 Once connected the current configuration block is displayed... 
 
-
-
+![](images/config-block.png)
 
 
 Clicking the `add` and an org link will prompt for new Org name,  
