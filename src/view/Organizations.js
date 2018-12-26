@@ -110,7 +110,7 @@ class Organizations extends Component {
 
     return (
       <div>
-        <legend>Orgs and Configuration  <button onClick={this.clickAddOrg}>Add</button></legend>
+        <legend>Orgs and Configuration  <button class="btn btn-link" onClick={this.clickAddOrg}>Add Org</button></legend>
       
         <ul className="list-group list-group-flush">{orgs}</ul>
   

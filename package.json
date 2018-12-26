@@ -1,5 +1,5 @@
 {
-  "name": "khs-org-manager",
+  "name": "byzantine-config",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -43,7 +43,7 @@
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron": "electron .",
-    "electron-pack": "build --mac",
+    "electron-pack": "build -mwl",
     "preelectron-pack": "yarn build",
     "postinstall": "electron-builder install-app-deps"
   },

@@ -14,6 +14,6 @@ Implements a Desktop application using Electron and ReactJS.
 
 ### Build Exectuable 
 
-    $ npm run electron-pack 
+    $ sudo npm run electron-pack 
 
-    Binary will be found in `dist` folder
+Binaries are created in the `dist` folder.

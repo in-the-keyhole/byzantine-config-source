@@ -83,7 +83,9 @@ class AddConfigTx extends Component {
     pbdirClick = e => {
         e.preventDefault();
         //let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
-        let dir = dialog.showOpenDialog({ title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
+    
+    
+        let dir = dialog.showOpenDialog({ filters: [{name: 'All Files', extensions: ['pb']}], title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
     }
 
 

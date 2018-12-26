@@ -14,6 +14,8 @@ var config = require('./config.js');
 
 var userpath = electron.app.getPath('userData');
 
+var filesToDelete = [];
+
 let mainWindow;
 
 
@@ -43,6 +45,7 @@ function createWindow() {
 
     try {
       let yamlstring = yaml.orgYaml(json);
+      filesToDelete.push(userpath + '/' + json.name + '.yaml' );
       event.returnValue = "SUCCESS: Crypto Material Generated in crypto-config";
       global.orginfo = json;
     } catch (e) {
@@ -68,6 +71,7 @@ function createWindow() {
     let pbfile = userpath + '/' + global.orginfo.name + '_update';
     yaml.decodeToJson(pbfile);
     event.returnValue = 'pb file decoded to JSON ' + pbfile + '.json';
+    filesToDelete.push(pbfile+'.json'); 
 
   });
 
@@ -77,13 +81,15 @@ function createWindow() {
     let json = JSON.parse(jsonstring);
 
     // write to file
-
-    fs.writeFile(userpath+'/modified.json', JSON.stringify(global.modifiedjson), (err) => {
+    let modified = userpath+'/modified.json'; 
+    fs.writeFile(modified, JSON.stringify(global.modifiedjson), (err) => {
       if (err) throw err;
       logger.info("The file was succesfully saved!");
+      let modifiedpb = userpath+'/modified_config.pb';
+      event.returnValue = yaml.convertToPb(userpath+'/modified.json', modifiedpb);
 
-      event.returnValue = yaml.convertToPb(userpath+'/modified.json', userpath+'/modified_config.pb');
-
+      filesToDelete.push(modified);
+      filesToDelete.push(modifiedpb);
     });
 
   });
@@ -96,11 +102,15 @@ function createWindow() {
     // write to file
 
     json = yaml.removeRuleType(json);
-    fs.writeFile(userpath+'/config.json', JSON.stringify(json), (err) => {
+    let configjson = userpath+'/config.json';
+    fs.writeFile(configjson, JSON.stringify(json), (err) => {
       if (err) throw err;
       logger.info("The file was succesfully saved!");
 
-      event.returnValue = yaml.convertToPb(userpath+'/config.json', userpath+'/config.pb');
+      let configpb = userpath+'/config.pb';
+      event.returnValue = yaml.convertToPb(configjson, configpb);
+      filesToDelete.push(configjson);
+      filesToDelete.push(configpb);
 
     });
 
@@ -145,6 +155,8 @@ function createWindow() {
     let updated = global.orginfo.name + '_update.pb';
     yaml.computeUpdateDeltaPb('mychannel', userpath+'/config.pb', userpath+'/modified_config.pb', userpath + '/' + updated);
     event.returnValue = 'Updated ' + updated + ' generated';
+    filesToDelete.push(userpath+'/'+updated);
+    //filesToDelete.push(userpath+'/modified_config.pb');
 
   });
 
@@ -159,7 +171,13 @@ function createWindow() {
   ipcMain.on('convertenvelope', (event) => {
 
     event.returnValue = yaml.convertEnvelope(global.orginfo.name);
+    envelopeFileName = userpath+'/'+global.orginfo.name+'_update_in_envelope.json';
+    filesToDelete.push(envelopeFileName);
 
+    // delete temp files 
+    filesToDelete.forEach( (f) => fs.unlinkSync(f) );
+    filesToDelete = [];     
+     
   });
 
    
