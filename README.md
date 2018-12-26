@@ -30,10 +30,12 @@ Once connected the current configuration block is displayed...
 ![](images/config-block.png)
 
 
-Clicking the `add` and an org link will prompt for new Org name,  
+Clicking the `add` and an org link will prompt for new Org name and properties, input desired values then click generate.
+
+![](images/add-org.png)
 
 
-
+Crypto artifacts for the new Org and an `updated config block` will be generated. The config block '< > ' will need to be signed by the consortiume 
 
 
 
