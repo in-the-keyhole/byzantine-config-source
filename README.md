@@ -16,5 +16,5 @@ Implements a Desktop application using Electron and ReactJS.
 
     $ sudo npm run electron-pack 
 
-Binaries are created in the `dist` folder.  Pre built 
+Binaries are created in the `dist` folder.  Pre built executable binaries can be found at [here](https://github.com/in-the-keyhole/byzantine-config);
 
