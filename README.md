@@ -20,7 +20,7 @@ Binaries are created in the `dist` folder.  Pre built executable binaries can be
 
 Updating a Hyperledger Fabric network configuration and adding/updating organizations requires a configuration block to be defined, signed and then executed as an update config transaction. Doing this manually with CLI tools can be complex and cumbersome.   
 
-Byantine-config provides an executable `GUI` application that simplifies greatly updating and adding Organizations. When invoked an initial connect screen will appear.  You will need a network peer node address, Userid, access to your private key, and Fabric Binaries 
+Byantine-config provides an executable `GUI` application that greatly simplifies updating and adding Organizations. When invoked an initial connect screen will appear.  You will need a network peer node address, Userid, access to your private key, and Fabric Binaries 
 
 ![](images/connect.png)
 
