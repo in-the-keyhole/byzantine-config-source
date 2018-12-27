@@ -35,9 +35,9 @@ Clicking the `add` and an org link will prompt for new Org name and properties, 
 ![](images/add-org.png)
 
 
-Crypto artifacts for the new Org and an `updated config block` will be generated. The config block '< > ' will need to be signed by the consortiume 
+Crypto artifacts for the new Org and an `updated config block` will be generated. The config block will need to be signed by the consortium based upon the 
 
-![](images/)
+![](images/generated-pb.png)
 
 
 
