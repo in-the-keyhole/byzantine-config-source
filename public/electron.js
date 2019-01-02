@@ -31,7 +31,7 @@ function createWindow() {
   ipcMain.on('block', (event, arg) => {
 
     let blockservice = require('./service/block.js');
-    blockservice.getConfigBlock('mychannel', blocks - 1).then(
+    blockservice.getConfigBlock(global.config.channelid, blocks - 1).then(
       function (res) {
 
         global.configblock = res;
@@ -153,7 +153,7 @@ function createWindow() {
 
   ipcMain.on('computedelta', (event) => {
     let updated = global.orginfo.name + '_update.pb';
-    yaml.computeUpdateDeltaPb('mychannel', userpath+'/config.pb', userpath+'/modified_config.pb', userpath + '/' + updated);
+    yaml.computeUpdateDeltaPb(global.config.channelid, userpath+'/config.pb', userpath+'/modified_config.pb', userpath + '/' + updated);
     event.returnValue = 'Updated ' + updated + ' generated';
     filesToDelete.push(userpath+'/'+updated);
     //filesToDelete.push(userpath+'/modified_config.pb');
@@ -220,6 +220,7 @@ function createWindow() {
   
     global.config = {
       network_url: json.peer,
+      channelid: json.channelid,
       user_id: json.userid,
       wallet_path: credspath,
       crypto_config: cryptopath,
@@ -232,7 +233,7 @@ function createWindow() {
     fs.writeFileSync(userdata+'/managerpaths.json',JSON.stringify({crypto: cryptopath, creds: credspath, bin: binpath}),);
 
     let blockinfo = require('./service/blockinfo.js');
-    blockinfo.getBlockInfo('mychannel').then((info) => {
+    blockinfo.getBlockInfo(global.config.channelid).then((info) => {
 
       if (info.indexOf("ERROR:") >= 0) {
         return  event.returnValue = "Error connecting and receiving block";
@@ -264,7 +265,7 @@ function createWindow() {
 
     }).catch((err) => {
 
-      event.returnValue = "ERROR: Could not connect, make sure PEER Node URL and KEYSTORE Location is correct...";
+      event.returnValue = "ERROR: Could not connect, make sure PEER Node URL and KEYSTORE Location are correct, and CHANNEL ID is valid...";
 
     });
 

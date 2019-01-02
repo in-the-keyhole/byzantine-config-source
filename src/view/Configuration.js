@@ -23,12 +23,13 @@ const remote = electron.remote;
 
 const blockservice = remote.getGlobal("blockservice");
 
-class Organizations extends Component {
+class Configuration extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { block: "" };
-
+    this.state = { block: "", edit: false };
+    this.orginal = {};
+  
   }
 
 
@@ -41,6 +42,13 @@ class Organizations extends Component {
     var json = JSON.parse(block);
    
     this.getConfigData(json);
+
+    if (this.state.edit) {
+
+
+
+    }
+
 
 
   }
@@ -74,6 +82,7 @@ class Organizations extends Component {
 
 
     this.setState({ block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+    this.orginal = { block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
 
   }
 
@@ -83,10 +92,50 @@ class Organizations extends Component {
 
   }
 
+  clickEdit = e => {
+    e.preventDefault();
+    this.setState({"edit":true});
+  }
+
+  clickSave = e => {
+    e.preventDefault();
+    this.setState({"edit":false});
+
+    if (this.orginal.batchsize != this.state.batchsize) {
+   
+        alert('Update config...');
+          
+    }
+
+  }
+
+
+  handleChange = event => {
+    this.setState({ [event.target.id]: event.target.value });
+  }
+
 
   render() {
 
     let orgs = [];
+    let BatchSize = () => <div><b>Batch Size:</b>{this.state.batchsize}</div>;
+    let ConsensusType = () => <div><b>Consensus Type:</b> {this.state.consensustype}</div>;
+    let BatchTimeout = () => <div><b>Batch Timeout:</b> {this.state.batchtimeout}</div>
+    let Orderers = () => <div><b>Orderers:</b> {this.state.orderers}</div>;
+    let EditSave = () => <button class="btn btn-link" onClick={this.clickEdit}>Edit</button>;
+
+    if (this.state.edit) {
+      
+      EditSave = () => <button class="btn btn-link" onClick={this.clickSave}>Save</button>;     
+      BatchSize = () => <div><b>Batch Size:</b> <input id="batchsize" name="batchsize" type="text" onChange={this.handleChange} value={this.state.batchsize} className="input-xlarge"  /></div>;
+      ConsensusType = () => <div><b>Consensus Type:</b> <input id="consensustype" id="consensustype" type="text" onChange={this.handleChange} value={this.state.consensustype} className="input-xlarge"  /></div>;
+      BatchTimeout = () => <div><b>Batch Timeout:</b> <input id="batchtimeout" name="batchtimeout" onChange={this.handleChange} value={this.state.batchtimeout} className="input-xlarge" /></div>;
+      Orderers = () => <div><b>Orderers:</b> <input id="orderers" name="orderers" type="text" onChange={this.handleChange} value={this.state.orderers} className="input-xlarge" /></div>;
+
+     }
+
+
+    orgs.push(<div><b>Channel:</b> {global.config.channelid} </div>);  
 
     if (this.state.orgs) {
       this.state.orgs.forEach((o) => {
@@ -94,7 +143,7 @@ class Organizations extends Component {
       }
       );
     }
-
+    
 
     let policies = [];
 
@@ -108,9 +157,12 @@ class Organizations extends Component {
     }
 
 
+   
+
+
     return (
       <div>
-        <legend>Orgs and Configuration  <button class="btn btn-link" onClick={this.clickAddOrg}>Add Org</button></legend>
+        <legend>Orgs and Configuration  <button class="btn btn-link" onClick={this.clickAddOrg}>Add Org</button> <EditSave /> </legend>
       
         <ul className="list-group list-group-flush">{orgs}</ul>
   
@@ -148,10 +200,14 @@ class Organizations extends Component {
                 <h4 className="card-title">Orderer</h4>
               </div>
               <div className="col-md-12">
-                <div><b>Orderers:</b> {this.state.orderers}</div>
-                <div><b>Consensus Type:</b> {this.state.consensustype}</div>
-                <div><b>Batch Size:</b> {this.state.batchsize}</div>
-                <div><b>Batch Timeout:</b> {this.state.batchtimeout}</div>
+                <form className="form-horizontal"> 
+                 <fieldset>
+                  <Orderers />
+                  <ConsensusType />
+                  <BatchSize />
+                  <BatchTimeout />
+                </fieldset>  
+               </form> 
               </div>
             </div>
           </div>
@@ -183,4 +239,4 @@ class Organizations extends Component {
   }
 }
 
-export default Organizations;
+export default Configuration;

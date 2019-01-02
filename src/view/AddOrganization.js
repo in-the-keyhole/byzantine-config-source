@@ -105,7 +105,7 @@ class AddOrganization extends Component {
 
             <form className="form-horizontal">
                 <fieldset>
-                    <legend>Add Org, Generate Crypto Material</legend>
+                    <legend>Add Org, Generate Crypto Material for Channel <b>{global.config.channelid}</b></legend>
                     <div className="control-group">
                         <label className="control-label" for="name">Name:</label>
                         <div className="controls">

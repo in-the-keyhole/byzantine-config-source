@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Organizations from './view/Organizations.js';
+import Configuration from './view/Configuration.js';
 import AddOrganization from './view/AddOrganization.js';
 import GenerateArtifacts from './view/GenerateArtifacts.js';
 import PeerConnection from './view/PeerConnection.js';
@@ -42,7 +42,7 @@ class App extends Component {
       <main>
     <Switch>
       <Route exact path="/" component={PeerConnection} />
-      <Route exact path="/org" component={Organizations} />
+      <Route exact path="/config" component={Configuration} />
       <Route exact path="/addorg" component={AddOrganization} />
       <Route exact path="/genartifacts" component={GenerateArtifacts} />
       <Route exact path="/connection" component={PeerConnection} />

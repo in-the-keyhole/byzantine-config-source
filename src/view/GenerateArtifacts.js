@@ -74,17 +74,12 @@ class AddConfigTx extends Component {
 
     cryptodirClick = e => {
         e.preventDefault();
-       // let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
-
-       let dir = dialog.showOpenDialog({ title: "Crypto Files", defaultPath: userpath + "/crypto-config/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] }); 
+        let dir = dialog.showOpenDialog({ title: "Crypto Files", defaultPath: userpath + "/crypto-config/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] }); 
 
     }
 
     pbdirClick = e => {
         e.preventDefault();
-        //let dir = dialog.showOpenDialog({ defaultPath: global.config.crypto_config + "/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] });
-    
-    
         let dir = dialog.showOpenDialog({ filters: [{name: 'All Files', extensions: ['pb']}], title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
     }
 
@@ -100,8 +95,6 @@ class AddConfigTx extends Component {
             current = "ERROR Getting Config Block";
 
         } else {
-
-           
 
             let block = JSON.parse(response);
 
@@ -312,7 +305,7 @@ class AddConfigTx extends Component {
         return (
 
             <div>
-                <legend>Generating Artifacts for new Organization : <b> {this.state.name} </b> </legend>
+                <legend>Generating Artifacts for new Organization : <b> {this.state.name} </b> in Channel: <b>{global.config.channelid}</b> </legend>
                 <div> <ul> {opslist} </ul>  </div>
 
                 <legend>Crypto Elements generated for : <b> {this.state.name} </b> </legend>

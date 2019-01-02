@@ -25,7 +25,7 @@ class PeerConnection extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { userid: "PeerAdmin", peer: "grpc://localhost:7051", creds: "", crypto: "", bin: "" };
+        this.state = { userid: "PeerAdmin", channelid:"mychannel", peer: "grpc://localhost:7051", creds: "", crypto: "", bin: "" };
 
     }
 
@@ -73,7 +73,7 @@ class PeerConnection extends Component {
             } else {
 
                 global.config = JSON.parse(response);
-                this.props.history.push("/org");
+                this.props.history.push("/config");
 
             }
 
@@ -138,6 +138,16 @@ class PeerConnection extends Component {
                             <p className="help-block">Fabric Network Peer Node Address</p>
                         </div>
                     </div>
+
+
+                    <div className="control-group">
+                        <label class="control-label" for="channel">Channel Id:</label>
+                        <div className="controls">
+                            <input id="channelid" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.channelid} placeholder="mychannel" className="input-xlarge" />
+                            <p className="help-block">Channel id</p>
+                        </div>
+                    </div>
+
 
                     <div className="control-group">
                         <label class="control-label" for="creds">Credential Keystore Path:</label>
