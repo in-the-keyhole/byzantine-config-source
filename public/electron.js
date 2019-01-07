@@ -359,7 +359,18 @@ function createWindow() {
       global.modifiedjson.channel_group.groups.Orderer.values.BatchTimeout.value.timeout = configupdate.batchtimeout;
     }
 
+    if (configupdate.orderers) {
+      global.modifiedjson.channel_group.values.OrdererAddresses.value.addresses = configupdate.orderer;
+    }
 
+    if (configupdate.hashingalgo) {
+      global.modifiedjson.channel_group.values.HashingAlgorithm.value.name = configupdate.hashingalgo;
+    }
+
+
+    if (configupdate.consortium) {
+      global.modifiedjson.channel_group.values.Consortium.value.name = configupdate.consortium;
+    }
 
 
     event.returnValue = "JSON Merged";

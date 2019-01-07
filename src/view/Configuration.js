@@ -127,6 +127,18 @@ class Configuration extends Component {
     }
 
 
+    if (this.orginal.hashingalgo != this.state.hashingalgo) {
+      global.modifiedConfig.hashingalgo = this.state.hashingalgo;
+      changed = true; 
+    }
+
+
+    if (this.orginal.consortium != this.state.consortium) {
+      global.modifiedConfig.consortium = this.state.consortium;
+      changed = true; 
+    }
+
+
 
 
     if (changed) {
@@ -147,20 +159,13 @@ class Configuration extends Component {
   render() {
 
     let orgs = [];
-    let BatchSize = () => <div><b>Batch Size:</b>{this.state.batchsize}</div>;
-    let ConsensusType = () => <div><b>Consensus Type:</b> {this.state.consensustype}</div>;
-    let BatchTimeout = () => <div><b>Batch Timeout:</b> {this.state.batchtimeout}</div>
-    let Orderers = () => <div><b>Orderers:</b> {this.state.orderers}</div>;
     let EditSave = () => <button class="btn btn-link" onClick={this.clickEdit}>Edit</button>;
 
     if (this.state.edit) {
       
       EditSave = () => <button class="btn btn-link" onClick={this.clickSave}>Save</button>;     
-      BatchSize = () => <div class="controls"><b>Batch Size:</b> <input id="batchsize" name="batchsize" type="text" onChange={this.handleChange} value={this.state.batchsize} className="input-xlarge"  /></div>;
-      ConsensusType = () => <div class="controls"><b>Consensus Type:</b> <input id="consensustype" name="textinput-0" type="text" onChange={this.handleChange} value={this.state.consensustype} placeholder="type" className="input-xlarge"  /></div>;
-      BatchTimeout = () => <div class="controls"><b>Batch Timeout:</b> <input name="batchtimeout" onChange={this.handleChange} value={this.state.batchtimeout} className="input-xlarge" /></div>;
-      Orderers = () => <div><b>Orderers:</b> <input id="orderers" name="textinput-2" type="text" onChange={this.handleChange} value={this.state.orderers} className="input-xlarge" /></div>;
-
+      this.refs.consortium.focus(); 
+    
      }
 
 
@@ -202,7 +207,7 @@ class Configuration extends Component {
         </div>
 
         <div className="row">
-          <div className="col-md-10"> <h3><b>Consortium:</b> {this.state.consortium}</h3> </div>
+          <div className="col-md-10"> <h3><b>Consortium:</b> <input id="consortium" name="consortium" ref="consortium" value={this.state.consortium} type="text" onChange={this.handleChange} className="input-xlarge"  /></h3> </div>
           <div className="col-md-2"> <h3><b>Block:</b> {this.state.block} </h3></div>
         </div>
 
@@ -232,9 +237,9 @@ class Configuration extends Component {
                 <form className="form-horizontal"> 
                 <div className="control-group">
                  <fieldset>
-                   <div class="controls"><b>Batch Size:</b> <input readOnly={this.state.edit == false} id="batchsize" name="batchsize" type="text" onChange={this.handleChange} value={this.state.batchsize} className="input-xlarge"  /></div>
+                   <div class="controls"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false} id="batchsize" name="batchsize" type="text" onChange={this.handleChange} value={this.state.batchsize} className="input-xlarge"  /></div>
                    <div class="controls"><b>Consensus Type:</b> <input readOnly={this.state.edit ==false} id="consensustype" name="consensustype" type="text" onChange={this.handleChange} value={this.state.consensustype} placeholder="type" className="input-xlarge"  /></div>
-                   <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} name="batchtimeout" onChange={this.handleChange} value={this.state.batchtimeout} className="input-xlarge" /></div>
+                   <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} id="batchtimeout" name="batchtimeout" onChange={this.handleChange} value={this.state.batchtimeout} className="input-xlarge" /></div>
                    <div><b>Orderers:</b> <input readOnly={this.state.edit == false} id="orderers" name="orderers" type="text" onChange={this.handleChange} value={this.state.orderers} className="input-xlarge" /></div>
                 </fieldset>  
                 </div>
@@ -252,7 +257,7 @@ class Configuration extends Component {
               <div className="col-md-12">
 
                 <div>
-                  <b>Hashing Algorithm:</b> {this.state.hashingalgorithm}
+                   <div class="controls"><b>Hashing Algorithm:</b> <input readOnly={this.state.edit == false} id="hashingalgo" name="hashingalgo" onChange={this.handleChange} value={this.state.hashingalgorithm} className="input-xlarge" /></div>
                 </div>
                 {policies}
               </div>
