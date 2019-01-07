@@ -20,15 +20,13 @@ const electron = window.require('electron');
 const remote = electron.remote;
 const { dialog } = remote;
 
-
 var userpath = remote.app.getPath('userData');
 
 
-class AddConfigTx extends Component {
+class ConfigUpdate extends Component {
 
     constructor(props) {
         super(props);
-        this.state = global.orgyaml;
         this.operations = [];
         this.setState({ current: "" });
         this.configblock = null;
@@ -41,27 +39,11 @@ class AddConfigTx extends Component {
 
     componentDidMount() {
 
-        let current = "";
-        var ipcRenderer = electron.ipcRenderer;
-
-        // let response = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
-        let response = ipcRenderer.sendSync('addtx', JSON.stringify(this.state));
-
-        if (response.indexOf("ERROR") >= 0) {
-            current = "ERROR generating Organization JSON Update...";
-
-        } else {
-            global.orgjson = response;
-            current = "Organization JSON Update Created...";
-
-        }
-
-        this.operations.push(current);
-        this.setState({ current: current });
+        
 
         this.getConfigBlock();
         this.convertAndTrim();
-        this.mergeCrypto();
+        this.mergeConfig();
         this.convertOriginal();
         this.convertModified();
         this.computeDelta();
@@ -88,6 +70,8 @@ class AddConfigTx extends Component {
 
         let current = "";
         var ipcRenderer = electron.ipcRenderer;
+        
+        ipcRenderer.sendSync('defaultinfo',null);
 
         var response = ipcRenderer.sendSync('block', JSON.stringify(this.state));
 
@@ -106,7 +90,7 @@ class AddConfigTx extends Component {
                 policies.push(pol[poly]);
             }
     
-            this.state.policies = policies;
+            this.setState({policies: policies});
 
             this.configblock = JSON.parse(response);
             current = "Configuration Block retrrieved...";
@@ -135,20 +119,20 @@ class AddConfigTx extends Component {
 
     }
 
-    mergeCrypto() {
+    mergeConfig() {
 
-        this.modifiedjson = JSON.parse(JSON.stringify(this.configblock));
+        this.modifiedjson = JSON.parse(JSON.stringify(global.modifiedConfig));
 
         var ipcRenderer = electron.ipcRenderer;
         let current = null;
-        var response = ipcRenderer.sendSync('mergecrypto', JSON.stringify(this.modifiedjson));
+        var response = ipcRenderer.sendSync('mergeconfig', JSON.stringify(this.modifiedjson));
 
         if (response.indexOf("ERROR:") >= 0) {
-            current = "ERROR merging Crypto JSON";
+            current = "ERROR merging config JSON";
 
         } else {
 
-            current = "Org Crypto Merged...";
+            current = "New Config Properties Merged...";
 
         }
 
@@ -292,7 +276,7 @@ class AddConfigTx extends Component {
 
         
         let policyhtml = [];
-        if (this.state.policies) {
+        if (this.state && this.state.policies && this.state.policies != null) {
     
           this.state.policies.forEach((p) => {
             policyhtml.push(<div><b> {p.name}  Policy</b>: {p.policy.type}, {p.policy.value.rule} </div>);
@@ -305,20 +289,13 @@ class AddConfigTx extends Component {
         return (
 
             <div>
-                <legend>Generating Artifacts for new Organization : <b> {this.state.name} </b> in Channel: <b>{global.config.channelid}</b> </legend>
+                <legend>Generating Configuration Update : <b>  </b> in Channel: <b>{global.config.channelid}</b> </legend>
                 <div> <ul> {opslist} </ul>  </div>
 
-                <legend>Crypto Elements generated for : <b> {this.state.name} </b> </legend>
+                <legend>Updated Configuration PB Envelope created: <b> _update_in_envelope.pb </b>  </legend>
 
                 <blockquote>
-                    Cryptographic Keys and Certs for org have been generated and can be found here <button id="pickdir" onClick={this.cryptodirClick} name="doublebutton-0" className="btn btn-success">channel-artifacts</button>
-
-                </blockquote>
-
-                <legend>Updated Configuration PB Envelope created: <b> {this.state.name}_update_in_envelope.pb </b>  </legend>
-
-                <blockquote>
-                    The new org <b>{this.state.name}</b> Configuration Update Transaction can found here <button id="pickdir" onClick={this.pbdirClick} name="doublebutton-0" className="btn btn-success">Config Block Envelope</button>
+                    The new org <b></b> Configuration Update Transaction can found here <button id="pickdir" onClick={this.pbdirClick} name="doublebutton-0" className="btn btn-success">Config Block Envelope</button>
                     <br />Based upon the channels policy, the following Organizations admins will need to sign before invoked against channel.
                     <br /> Channel policies are: {policyhtml}
                  </blockquote>
@@ -327,4 +304,4 @@ class AddConfigTx extends Component {
     }
 }
 
-export default AddConfigTx;
+export default ConfigUpdate;

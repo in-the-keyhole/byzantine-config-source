@@ -5,6 +5,7 @@ import Configuration from './view/Configuration.js';
 import AddOrganization from './view/AddOrganization.js';
 import GenerateArtifacts from './view/GenerateArtifacts.js';
 import PeerConnection from './view/PeerConnection.js';
+import ConfigUpdate from './view/ConfigUpdate.js';
 
 import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
 
@@ -46,6 +47,7 @@ class App extends Component {
       <Route exact path="/addorg" component={AddOrganization} />
       <Route exact path="/genartifacts" component={GenerateArtifacts} />
       <Route exact path="/connection" component={PeerConnection} />
+      <Route exact path="/configupdate" component={ConfigUpdate} />
       <Route path='/'>
           <Redirect to="/connection" />
       </Route>
