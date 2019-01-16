@@ -48,3 +48,21 @@ This can be accomplished in one of two ways:
 2. Install the HLF binaries onto your system and issue the command from a command prompt.
 
 #### Execute an `update` transaction in HLF
+Now that the PB file has been signed, it is time to issue the update to the HLF config.  The following command must be issued:
+
+```peer channel update -f /path/to/file/<your_org_name>_update_in_envelope.pb -c $CHANNEL_NAME -o $ORDERER_ADDRESS:$ORDERER_PORT --tls --cafile $ORDERER_CA```
+
+This example uses pre-set environment variables, as follows:
+* $CHANNEL_NAME: the name of the channel to execute the update against.  (e.g. mychannel)
+* $ORDERER_ADDRESS: the domain name location of the orderer node (e.g. orderer.example.com)
+* $ORDERER_PORT: the port number on which the orderer is listening (e.g. 7050)
+* $ORDERER_CA: the path to the generated .pem file for the new organization (e.g. /path/to/file/<your_org_name>/tlsca/tlsca.<your_org_name>-cert.pem)
+
+You may certainly skip the use of environment variables and substitute the correct values in the command, instead.
+
+#### Verify
+Upon successfull execution of the `update` command (above), you should see a message similar to the following:
+
+`Successfully submitted channel update`
+
+You can verify the execution by inspecting the latest/current HLF configuration block.
