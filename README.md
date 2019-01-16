@@ -35,7 +35,7 @@ Click the `Add Org` link and the UI will prompt you for the new organization nam
 ![](images/add-org.png)
 
 #### Verify generated artifacts
-The newly generated crypto artifacts (as well as an `updated config block &lt;your_org_name&gt;_update_in_envelope.pb` file) for your organization will be on disk.  This screen allows you to open the containing folders to verify their existence and contents.
+The newly generated crypto artifacts (as well as an `updated config block <your_org_name>_update_in_envelope.pb` file) for your organization will be on disk.  This screen allows you to open the containing folders to verify their existence and contents.
 ![](images/generated-pb.png)
 
 #### Sign the PB file
