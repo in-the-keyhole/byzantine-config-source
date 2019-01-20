@@ -22,7 +22,7 @@ let mainWindow;
 function createWindow() {
 
 
-  mainWindow = new BrowserWindow({ width: 900, height: 860 });
+  mainWindow = new BrowserWindow({ width: 1024, height: 860 });
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 
@@ -347,16 +347,21 @@ function createWindow() {
 
     global.originaljson = JSON.parse(JSON.stringify(global.modifiedjson));
 
+    let updated = "";
+
     if (configupdate.batchsize) {
       global.modifiedjson.channel_group.groups.Orderer.values.BatchSize.value.max_message_count = parseInt(configupdate.batchsize);
+      updated += "Batch Size, ";
     }
 
     if (configupdate.consensustype) {
       global.modifiedjson.channel_group.groups.Orderer.values.ConsensusType.value.type = configupdate.consensustype;
+      updated += "Consensus Type, ";
     }
 
     if (configupdate.batchtimeout) {
       global.modifiedjson.channel_group.groups.Orderer.values.BatchTimeout.value.timeout = configupdate.batchtimeout;
+      updated += "Batch Timeout, ";
     }
 
     if (configupdate.orderers) {
@@ -372,8 +377,16 @@ function createWindow() {
       global.modifiedjson.channel_group.values.Consortium.value.name = configupdate.consortium;
     }
 
+    global.modifiedConfig.ordererpolicy.admin.type
+    if (configupdate.ordererpolicyadmintype) {
+      global.modifiedjson.channel_group.policy.Admins.policy.type = configupdate.ordererPolicy.admin.type;
+      updated += "Orderer Admin Policy Type, ";   
+    }
 
-    event.returnValue = "JSON Merged";
+
+
+
+    event.returnValue = "JSON Merged with following updates = "+updated;
 
 
   });

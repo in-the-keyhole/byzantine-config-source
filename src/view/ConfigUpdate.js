@@ -132,7 +132,7 @@ class ConfigUpdate extends Component {
 
         } else {
 
-            current = "New Config Properties Merged...";
+            current = response;
 
         }
 
