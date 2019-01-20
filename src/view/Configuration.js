@@ -28,7 +28,7 @@ class Configuration extends Component {
   constructor(props) {
     super(props);
     this.state = { block: "", edit: false };
-    this.orginal = {};
+    this.original = {};
     this.updated = {};
   
   }
@@ -81,9 +81,11 @@ class Configuration extends Component {
     }
 
 
-    this.setState({ block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.orginal = { block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    
 
+    this.setState({ block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+    this.original = { block: block, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
   clickAddOrg = e => {
@@ -104,36 +106,36 @@ class Configuration extends Component {
     global.originalConfig = this.original;
     global.modifiedConfig = {};
     let changed = false;
-    if (this.orginal.batchsize != this.updated.batchsize) {
+    if (this.original.batchsize != this.updated.batchsize) {
         global.modifiedConfig.batchsize = this.updated.batchsize;
         changed = true; 
     }
 
-    if (this.orginal.consensustype != this.updated.consensustype) {
+    if (this.original.consensustype != this.updated.consensustype) {
       global.modifiedConfig.consensustype = this.updated.consensustype;
       changed = true; 
     }
 
 
-    if (this.orginal.batchtimeout != this.updated.batchtimeout) {
+    if (this.original.batchtimeout != this.updated.batchtimeout) {
       global.modifiedConfig.batchtimeout = this.updated.batchtimeout;
       changed = true; 
     }
 
 
-    if (this.orginal.orderers != this.updated.orderers) {
-      global.modifiedConfig.orderers = this.updated.orderers;
+    if (this.original.orderers != this.updated.orderers) {
+      global.modifiedConfig.orderers = this.updated.orderers.split(',');
       changed = true; 
     }
 
 
-    if (this.orginal.hashingalgo != this.updated.hashingalgo) {
+    if (this.original.hashingalgo != this.updated.hashingalgo) {
       global.modifiedConfig.hashingalgo = this.updated.hashingalgo;
       changed = true; 
     }
 
 
-    if (this.orginal.consortium != this.updated.consortium) {
+    if (this.original.consortium != this.updated.consortium) {
       global.modifiedConfig.consortium = this.updated.consortium;
       changed = true; 
     }
@@ -242,7 +244,7 @@ class Configuration extends Component {
                    <div class="controls"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false} id="batchsize" name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge"  /></div>
                    <div class="controls"><b>Consensus Type:</b> <input readOnly={this.state.edit ==false} id="consensustype" name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge"  /></div>
                    <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} id="batchtimeout" name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
-                   <div><b>Orderers:</b> <input readOnly={this.state.edit == false} id="orderers" name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
+                   <div><b>Orderers:</b> <input readOnly={this.state.edit == false} size="80" id="orderers" name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
                 </fieldset>  
                 </div>
                </form> 
