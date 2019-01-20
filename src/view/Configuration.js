@@ -29,14 +29,14 @@ class Configuration extends Component {
     super(props);
     this.state = { block: "", edit: false };
     this.orginal = {};
+    this.updated = {};
   
   }
 
 
   componentDidMount() {
 
-    // In renderer process (web page).
-    //const {ipcRenderer} = require('electron')
+  
     var ipcRenderer = electron.ipcRenderer;
     var block = ipcRenderer.sendSync('block', 'blockargs');
     var json = JSON.parse(block);
@@ -104,37 +104,37 @@ class Configuration extends Component {
     global.originalConfig = this.original;
     global.modifiedConfig = {};
     let changed = false;
-    if (this.orginal.batchsize != this.state.batchsize) {
-        global.modifiedConfig.batchsize = this.state.batchsize;
+    if (this.orginal.batchsize != this.updated.batchsize) {
+        global.modifiedConfig.batchsize = this.updated.batchsize;
         changed = true; 
     }
 
-    if (this.orginal.consensustype != this.state.consensustype) {
-      global.modifiedConfig.consensustype = this.state.consensustype;
+    if (this.orginal.consensustype != this.updated.consensustype) {
+      global.modifiedConfig.consensustype = this.updated.consensustype;
       changed = true; 
     }
 
 
-    if (this.orginal.batchtimeout != this.state.batchtimeout) {
-      global.modifiedConfig.batchtimeout = this.state.batchtimeout;
+    if (this.orginal.batchtimeout != this.updated.batchtimeout) {
+      global.modifiedConfig.batchtimeout = this.updated.batchtimeout;
       changed = true; 
     }
 
 
-    if (this.orginal.orderers != this.state.orderers) {
-      global.modifiedConfig.orderers = this.state.orderers;
+    if (this.orginal.orderers != this.updated.orderers) {
+      global.modifiedConfig.orderers = this.updated.orderers;
       changed = true; 
     }
 
 
-    if (this.orginal.hashingalgo != this.state.hashingalgo) {
-      global.modifiedConfig.hashingalgo = this.state.hashingalgo;
+    if (this.orginal.hashingalgo != this.updated.hashingalgo) {
+      global.modifiedConfig.hashingalgo = this.updated.hashingalgo;
       changed = true; 
     }
 
 
-    if (this.orginal.consortium != this.state.consortium) {
-      global.modifiedConfig.consortium = this.state.consortium;
+    if (this.orginal.consortium != this.updated.consortium) {
+      global.modifiedConfig.consortium = this.updated.consortium;
       changed = true; 
     }
 
@@ -152,7 +152,9 @@ class Configuration extends Component {
 
 
   handleChange = event => {
-    this.setState({ [event.target.id]: event.target.value });
+   
+    this.updated[event.target.id] =  event.target.value;
+   
   }
 
 
@@ -207,7 +209,7 @@ class Configuration extends Component {
         </div>
 
         <div className="row">
-          <div className="col-md-10"> <h3><b>Consortium:</b> <input id="consortium" name="consortium" ref="consortium" value={this.state.consortium} type="text" onChange={this.handleChange} className="input-xlarge"  /></h3> </div>
+          <div className="col-md-10"> <h3><b>Consortium:</b> <input id="consortium" name="consortium" ref="consortium" defaultValue={this.state.consortium} type="text" onChange={this.handleChange} className="input-xlarge"  /></h3> </div>
           <div className="col-md-2"> <h3><b>Block:</b> {this.state.block} </h3></div>
         </div>
 
@@ -237,10 +239,10 @@ class Configuration extends Component {
                 <form className="form-horizontal"> 
                 <div className="control-group">
                  <fieldset>
-                   <div class="controls"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false} id="batchsize" name="batchsize" type="text" onChange={this.handleChange} value={this.state.batchsize} className="input-xlarge"  /></div>
-                   <div class="controls"><b>Consensus Type:</b> <input readOnly={this.state.edit ==false} id="consensustype" name="consensustype" type="text" onChange={this.handleChange} value={this.state.consensustype} placeholder="type" className="input-xlarge"  /></div>
-                   <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} id="batchtimeout" name="batchtimeout" onChange={this.handleChange} value={this.state.batchtimeout} className="input-xlarge" /></div>
-                   <div><b>Orderers:</b> <input readOnly={this.state.edit == false} id="orderers" name="orderers" type="text" onChange={this.handleChange} value={this.state.orderers} className="input-xlarge" /></div>
+                   <div class="controls"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false} id="batchsize" name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge"  /></div>
+                   <div class="controls"><b>Consensus Type:</b> <input readOnly={this.state.edit ==false} id="consensustype" name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge"  /></div>
+                   <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} id="batchtimeout" name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
+                   <div><b>Orderers:</b> <input readOnly={this.state.edit == false} id="orderers" name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
                 </fieldset>  
                 </div>
                </form> 
@@ -257,7 +259,7 @@ class Configuration extends Component {
               <div className="col-md-12">
 
                 <div>
-                   <div class="controls"><b>Hashing Algorithm:</b> <input readOnly={this.state.edit == false} id="hashingalgo" name="hashingalgo" onChange={this.handleChange} value={this.state.hashingalgorithm} className="input-xlarge" /></div>
+                   <div class="controls"><b>Hashing Algorithm:</b> <input readOnly={this.state.edit == false} id="hashingalgo" name="hashingalgo" onChange={this.handleChange} defaultValue={this.state.hashingalgorithm} className="input-xlarge" /></div>
                 </div>
                 {policies}
               </div>
