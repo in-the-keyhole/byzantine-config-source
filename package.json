@@ -24,8 +24,8 @@
     "socket.io": "^2.1.1"
   },
   "engines": {
-    "node": ">=6.9.5 <7.0",
-    "npm": ">=3.10.10 <4.0"
+    "node": ">=6.9.5 <9.0",
+    "npm": ">=3.10.10 <7.0"
   },
   "devDependencies": {
     "concurrently": "^4.0.1",

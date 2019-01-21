@@ -177,7 +177,7 @@ var convertEnvelope = function (orgname) {
     const { execSync } = require('child_process');
     const testscript = execSync(binpath+' proto_encode --input "'+envelopeFileName+'" --type common.Envelope --output "'+outputFileName+'"');
 
-    return "PB Envelope created "+outputFileName+"...";
+    return "PB Envelope created in: " + outputFileName;
 
 }
 
