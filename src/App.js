@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
 import Configuration from './view/Configuration.js';
 import AddOrganization from './view/AddOrganization.js';
 import GenerateArtifacts from './view/GenerateArtifacts.js';
@@ -13,32 +12,30 @@ import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
 import {
   Navbar,
   Nav,
-  NavItem,
-  FormGroup,
-  FormControl,
-  Button
+  NavItem
 } from "react-bootstrap";
 
 
-const electron = window.require('electron');
-const fs = electron.remote.require('fs');
+// const electron = window.require('electron');
+// const fs = electron.remote.require('fs');
 
 class App extends Component {
 
-  read() {
-    fs.readFile('./src/App.css', (err, data) => {
-      if (err) throw err;
-         console.log(data);
-         this.state = {file: "file has been read "+data};
-    });
+  // TODO - is this necessary?  Or, can it be deleted?  Seems like it's not doing anything.
+  // read() {
+  //   fs.readFile('./src/App.css', (err, data) => {
+  //     if (err) throw err;
+  //        console.log(data);
+  //        this.state = {file: "file has been read "+data};
+  //   });
 
-      this.state = {file: "Reading"};
-  }
+  //     this.state = {file: "Reading"};
+  // }
 
 
   render() {
 
-    this.read();
+    // this.read();
     const Main = ({ numberofblocks }) => (
       <main>
     <Switch>

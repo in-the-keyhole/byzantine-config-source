@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 import React, { Component } from "react";
-import axios from "axios";
 const electron = window.require('electron');
 const remote = electron.remote;
 const { dialog } = remote;
@@ -35,7 +34,6 @@ class PeerConnection extends Component {
     }
 
     componentDidMount() {
-
         let ipcRenderer = electron.ipcRenderer;
         let contents = ipcRenderer.sendSync('paths', JSON.stringify(this.state));
         let paths = JSON.parse(contents);
@@ -46,39 +44,28 @@ class PeerConnection extends Component {
 
     }
 
-
     connectClick = e => {
         e.preventDefault();
 
-
         // validate 
-
-        if (this.state.bin == "") {
-
-            this.state.status = "Crpyto Directory Required, pleasee select above...";
-
-        } else if (this.state.creds == "") {
-            this.state.status = "Credentials keystore directory required, please select above...";
+        if (this.state.bin === "") {
+            this.setState({status: "Crpyto Directory Required, pleasee select above..."});
+            // this.state.status = "Crpyto Directory Required, pleasee select above...";
+        } else if (this.state.creds === "") {
+            this.setState({status: "Credentials keystore directory required, please select above..."});
+            // this.state.status = "Credentials keystore directory required, please select above...";
         } else {
-
-
             var ipcRenderer = electron.ipcRenderer;
             var org = JSON.stringify(this.state);
             var response = ipcRenderer.sendSync('connect', org);
 
             if (response.indexOf("ERROR:") >= 0) {
-
                 this.setState({ status: response });
-
             } else {
-
                 global.config = JSON.parse(response);
                 this.props.history.push("/config");
-
             }
-
         }
-
 
 
     }

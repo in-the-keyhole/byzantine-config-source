@@ -1,6 +1,7 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const nativeImage = require('electron').nativeImage
 
 const path = require('path');
 const url = require('url');
@@ -21,8 +22,18 @@ let mainWindow;
 
 function createWindow() {
 
+  // let icon = nativeImage.createFromPath(__dirname + '../images/icons/png/16x16.png')
+  mainWindow = new BrowserWindow({ 
+    show: false,
+    width: 900, 
+    height: 860,
+    icon: path.join(__dirname, '../images/icons/png/64x64.png')
+  });
+  // prevent screen flashing by waiting for the ready-to-show event before displaying the window shell
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
-  mainWindow = new BrowserWindow({ width: 900, height: 860 });
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 

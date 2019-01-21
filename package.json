@@ -48,7 +48,8 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "appId": "com.example.electron-cra",
+    "appId": "com.keyholesoftware.byzantine-config",
+    "productName": "Byzantine Config",
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -56,6 +57,10 @@
     "directories": {
       "buildResources": "assets",
       "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "images/icons/mac/icon.icns"
     }
   },
   "eslintConfig": {

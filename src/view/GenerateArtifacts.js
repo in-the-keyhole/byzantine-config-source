@@ -15,14 +15,11 @@ limitations under the License.
 */
 
 import React, { Component } from "react";
-import axios from "axios";
 const electron = window.require('electron');
 const remote = electron.remote;
 const { dialog } = remote;
 
-
 var userpath = remote.app.getPath('userData');
-
 
 class AddConfigTx extends Component {
 
@@ -74,15 +71,13 @@ class AddConfigTx extends Component {
 
     cryptodirClick = e => {
         e.preventDefault();
-        let dir = dialog.showOpenDialog({ title: "Crypto Files", defaultPath: userpath + "/crypto-config/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] }); 
-
+        dialog.showOpenDialog({ title: "Crypto Files", defaultPath: userpath + "/crypto-config/peerOrganizations/" + global.orgyaml.domain, properties: ['openFile', 'openDirectory'] }); 
     }
 
     pbdirClick = e => {
         e.preventDefault();
-        let dir = dialog.showOpenDialog({ filters: [{name: 'All Files', extensions: ['pb']}], title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
+        dialog.showOpenDialog({ filters: [{name: 'All Files', extensions: ['pb']}], title: "PR Config File ",   defaultPath: userpath + "/" + this.state.name+"_update_in_envelope.pb", properties: ['openFile'] });
     }
-
 
     getConfigBlock() {
 
@@ -106,7 +101,8 @@ class AddConfigTx extends Component {
                 policies.push(pol[poly]);
             }
     
-            this.state.policies = policies;
+            this.setState({policies: policies});
+            // this.state.policies = policies;
 
             this.configblock = JSON.parse(response);
             current = "Configuration Block retrrieved...";
@@ -115,24 +111,18 @@ class AddConfigTx extends Component {
 
         this.operations.push(current);
         this.setState({ current: current });
-
-
     }
 
 
     convertAndTrim() {
-
-
         var ipcRenderer = electron.ipcRenderer;
         this.configblock = this.configblock.data.data[0].payload.data.config;
        
-        var response = ipcRenderer.sendSync('block', JSON.stringify(this.configblock));
+        ipcRenderer.sendSync('block', JSON.stringify(this.configblock));
 
         let current = "Trimmed Configuration Block...";
         this.operations.push(current);
         this.setState({ current: current });
-
-
     }
 
     mergeCrypto() {

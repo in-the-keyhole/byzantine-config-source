@@ -15,25 +15,19 @@ limitations under the License.
 */
 
 import React, { Component } from "react";
-import axios from "axios";
 const electron = window.require('electron');
-const remote = electron.remote;
-const blockservice = remote.getGlobal("blockservice");
-
 
 class AddOrganization extends Component {
 
     constructor(props) {
         super(props);
         this.state = { name: "", domain: "", peers: 2, users: 1 };
-
     }
 
     cancelClick = event => {   
        event.preventDefault();
        this.props.history.push("/config");
     }
-
 
     handleChange = event => {
         this.setState({ [event.target.id]: event.target.value });
@@ -45,29 +39,19 @@ class AddOrganization extends Component {
         // validate
         let status = null;
 
-        if (this.state.name == undefined || this.state.name == "") {
-
+        if (this.state.name === undefined || this.state.name === "") {
            status = "Organization name required ";
-
-        } else if (this.state.domain == undefined || this.state.domain == "") {
-            
+        } else if (this.state.domain === undefined || this.state.domain === "") {
             status = "Domain name required ";
-            
         } else {
 
         global.orgyaml = { "name": this.state.name, "domain": this.state.domain, "peers": this.state.peers, "users": this.state.users };
         var ipcRenderer = electron.ipcRenderer;
-
            status = ipcRenderer.sendSync('orggen', JSON.stringify(this.state));
-
-           
            this.props.history.push("/genartifacts");
-
-
         }
 
         this.setState({ status: status });
-
     }
 
     addArtifactsClick = e => {
