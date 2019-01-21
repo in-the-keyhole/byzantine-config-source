@@ -93,7 +93,7 @@ class ConfigUpdate extends Component {
             this.setState({policies: policies});
 
             this.configblock = JSON.parse(response);
-            current = "Configuration Block retrrieved...";
+            current = "Configuration Block retrieved...";
 
         }
 
