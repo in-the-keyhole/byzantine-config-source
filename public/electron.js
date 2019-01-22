@@ -377,10 +377,18 @@ function createWindow() {
       global.modifiedjson.channel_group.values.Consortium.value.name = configupdate.consortium;
     }
 
-    global.modifiedConfig.ordererpolicy.admin.type
+  
     if (configupdate.ordererpolicyadmintype) {
-      global.modifiedjson.channel_group.policy.Admins.policy.type = configupdate.ordererPolicy.admin.type;
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Admins.policy.type = configupdate.ordererpolicyadmintype;
       updated += "Orderer Admin Policy Type, ";   
+    }
+
+
+    if (configupdate.ordererpolicyadminrule) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Admins.policy.value.rule = configupdate.ordererpolicyadminrule;
+      updated += "Orderer Admin Policy Rule, ";   
     }
 
 

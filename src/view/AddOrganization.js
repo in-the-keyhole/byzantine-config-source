@@ -29,6 +29,11 @@ class AddOrganization extends Component {
 
     }
 
+    cancelClick = event => {   
+       event.preventDefault();
+       this.props.history.push("/config");
+    }
+
 
     handleChange = event => {
         this.setState({ [event.target.id]: event.target.value });
@@ -67,9 +72,6 @@ class AddOrganization extends Component {
 
     addArtifactsClick = e => {
         e.preventDefault();
-
-
-
         this.props.history.push("/genartifacts");
 
     }
@@ -105,7 +107,7 @@ class AddOrganization extends Component {
 
             <form className="form-horizontal">
                 <fieldset>
-                    <legend>Add Org, Generate Crypto Material for Channel <b>{global.config.channelid}</b></legend>
+                    <legend>Add Org, Generate Crypto Material for Channel <b>{global.config.channelid}</b> <button class="btn btn-link" onClick={this.cancelClick}>Cancel</button> </legend>
                     <div className="control-group">
                         <label className="control-label" for="name">Name:</label>
                         <div className="controls">

@@ -44,26 +44,20 @@ class Configuration extends Component {
     this.orginal = {};
     this.updated = {};
     this.handleChange = this.handleChange.bind(this);
+    this.currentordereradminpol = "IMPLICIT_META";
+  
 
   }
 
 
   componentDidMount() {
 
-    // In renderer process (web page).
-    //const {ipcRenderer} = require('electron')
+  
     var ipcRenderer = electron.ipcRenderer;
     var block = ipcRenderer.sendSync('block', 'blockargs');
     var json = JSON.parse(block);
 
     this.getConfigData(json);
-
-    if (this.state.edit) {
-
-
-
-    }
-
 
 
   }
@@ -99,15 +93,12 @@ class Configuration extends Component {
     }
 
 
-    let ordererpolicies = [];
-    for (var poly in ordererpol) {
-      ordererpol[poly].name = poly;
-      ordererpolicies.push(ordererpol[poly]);
-    }
+    this.currentordereradminpol = ordereradminpol.policy.type;
+  
 
-    this.setState({ block: block, ordereradminpol: ordereradminpol, ordererpolicies: ordererpolicies, policies: policies, consortium: consortium, orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.orginal = { block: block, ordereradminpol: ordereradminpol, ordererpolicies: ordererpolicies, policies: policies, consortium: consortium, orgs: orgs, lastupdate: lastupdate, orderers: ordaddr, hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
-
+    this.setState({ block: block, ordereradminpol: ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+    this.original = { block: block, ordereradminpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
   clickAddOrg = e => {
@@ -134,50 +125,52 @@ class Configuration extends Component {
     global.originalConfig = this.original;
     global.modifiedConfig = {};
     let changed = false;
-    if (this.orginal.batchsize != this.updated.batchsize) {
-      global.modifiedConfig.batchsize = this.updated.batchsize;
-      changed = true;
+    if (this.original.batchsize != this.updated.batchsize) {
+        global.modifiedConfig.batchsize = this.updated.batchsize;
+        changed = true; 
     }
 
-    if (this.orginal.consensustype != this.updated.consensustype) {
+    if (this.original.consensustype != this.updated.consensustype) {
       global.modifiedConfig.consensustype = this.updated.consensustype;
-      changed = true;
+      changed = true; 
     }
 
 
-    if (this.orginal.batchtimeout != this.updated.batchtimeout) {
+    if (this.original.batchtimeout != this.updated.batchtimeout) {
       global.modifiedConfig.batchtimeout = this.updated.batchtimeout;
-      changed = true;
+      changed = true; 
     }
 
 
-    if (this.orginal.orderers != this.updated.orderers) {
-      global.modifiedConfig.orderers = this.updated.orderers;
-      changed = true;
+    if (this.original.orderers != this.updated.orderers) {
+      global.modifiedConfig.orderers = this.updated.orderers.split(',');
+      changed = true; 
     }
 
 
-    if (this.orginal.hashingalgo != this.updated.hashingalgo) {
+    if (this.original.hashingalgo != this.updated.hashingalgo) {
       global.modifiedConfig.hashingalgo = this.updated.hashingalgo;
-      changed = true;
+      changed = true; 
     }
 
 
-    if (this.orginal.consortium != this.updated.consortium) {
+    if (this.original.consortium != this.updated.consortium) {
       global.modifiedConfig.consortium = this.updated.consortium;
-      changed = true;
+      changed = true; 
     }
 
     
-      if (this.updated.ordererpolicyadmintype)   {
-
-        
-        global.modifiedConfig.ordererpolicy.admin.type = this.updated.ordererpolicyadmintype;
+    if (this.updated.ordererpolicyadmintype)   {
+        global.modifiedConfig.ordererpolicyadmintype = POLICIES[this.updated.ordererpolicyadmintype];
         changed = true;
-      
-
-
     }
+
+    if (this.updated.ordererpolicyadminrule)   {
+      global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordererpolicyadminrule];
+      changed = true;
+  }
+
+
 
 
     if (changed) {
@@ -191,8 +184,15 @@ class Configuration extends Component {
 
 
   handleChange(event) {
-    //this.setState({ [event.target.name]: event.target.value });
+    
     this.updated[event.target.name] = event.target.value;
+
+    if (event.target.name == 'ordererpolicyadmintype' ) {
+        this.currentordereradminpol = event.target.value; 
+       this.setState( { rerender: new Date().getTime() } );
+    }
+
+
   }
 
   selected(l,r) {
@@ -238,31 +238,51 @@ class Configuration extends Component {
 
 
     let ordererpolicies = [];
-
-    /*if (this.state.ordererpolicies) {
-
-      this.state.ordererpolicies.forEach((p) => {
-        ordererpolicies.push(<div><b>Policy:</b> {p.name} <b>Type:</b> <input onChange={this.handleChange} readOnly={this.state.edit == false} type="text" id={'ordererpolicy' + p.name + 'type'} name={'ordererpolicy' + p.name + 'type'} defaultValue={p.policy.type} /> <b>Rule:</b> <input onChange={this.handleChange} readOnly={this.state.edit == false} type="text" id={p.policy.rule} name={p.policy.rule} defaultValue={p.policy.value.rule} /> </div>);
-      }
-      );
-
-    } */
-
-  
+     
     
     if (this.state.ordereradminpol) {
+    
     let ordereradmintype = this.state.ordereradminpol.policy.type;
     let ordereradminrule = this.state.ordereradminpol.policy.value.rule;
     let ordereradminsubpol = this.state.ordereradminpol.policy.value.sub_policy;
 
 
-       let ordererpolicyadminselect = <div> Policy Admin <select name="ordererpolicyadmintype" onChange={this.handleChange}>
-          <option value="IMPLICIT_META" selected={this.selected(ordereradmintype,"IMPLICIT_META")}>IMPLICIT_META</option>
-          <option value="SIGNATURE">SIGNATURE</option>
+       if (this.currentordereradminpol == "IMPLICIT_META") { 
+
+          let ordererruleadminselect = <div className="col"> Rule: <select disabled={this.state.edit == false} name="ordererpolicyadminrule" className="form-control" onChange={this.handleChange}>
+          <option value="ANY" selected={this.selected(ordereradminrule,"ANY")}>ANY</option>
+          <option value="ALL" selected={this.selected(ordereradminrule,"ALL")} >ALL</option>
+          <option value="MAJORITY" selected={this.selected(ordereradminrule,"MAJORITY")} >MAJORITY</option>
         </select></div>;
 
-      ordererpolicies.push(ordererpolicyadminselect);
+   
+        let ordererpolicyadminselect = <form><div className="form-row"> <div className="col">  Policy Admin <select disabled={this.state.edit == false} className="form-control"  name="ordererpolicyadmintype" onChange={this.handleChange}>
+          <option value="IMPLICIT_META" selected={this.selected(ordereradmintype,"IMPLICIT_META")}>IMPLICIT_META</option>
+          <option value="SIGNATURE" selected={this.selected(ordereradmintype,"SIGNATURE")}  >SIGNATURE</option>
+        </select> {ordererruleadminselect} </div> </div></form>;
 
+
+         ordererpolicies.push(ordererpolicyadminselect);
+
+        
+
+
+       } else {
+
+
+          let ordererruleadminselect = <div name="ordererpolicyadminrule"> Rule: N of N </div>;
+
+ 
+            let ordererpolicyadminselect = <div> Policy Admin <select readOnly={this.state.edit == false} name="ordererpolicyadmintype" onChange={this.handleChange}>
+              <option value="IMPLICIT_META" selected={this.selected(this.currentordereradminpol,"IMPLICIT_META")}>IMPLICIT_META</option>
+              <option value="SIGNATURE" selected={this.selected(this.currentordereradminpol,"SIGNATURE")}  >SIGNATURE</option>
+            </select> {ordererruleadminselect} </div>;
+
+
+         ordererpolicies.push(ordererpolicyadminselect);
+
+
+       } 
 
     }
 
@@ -313,11 +333,11 @@ class Configuration extends Component {
                   <form className="form-horizontal">
                     <div className="control-group">
                       <fieldset>
-                        <div class="controls"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false}  name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge" /></div>
-                        <div class="controls"><b>Consensus Type:</b> <input readOnly={this.state.edit == false}  name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge" /></div>
-                        <div class="controls"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false}  name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
+                        <div class="form-control"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false}  name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge" /></div>
+                        <div class="form-control"><b>Consensus Type:</b> <input readOnly={this.state.edit == false}  name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge" /></div>
+                        <div class="form-control"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false}  name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
                         <div><b>Orderers:</b> <input readOnly={this.state.edit == false}  name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
-                        {ordererpolicies}
+                        {ordererpolicies} 
 
                       </fieldset>
                     </div>
