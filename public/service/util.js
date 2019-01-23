@@ -58,6 +58,7 @@ var connectChannel = function (channel_id) {
             try {
 
                 channel = client.newChannel(channel_id);
+                logger.info("Connnect to peer ", config.network_url);
                 peer = client.newPeer(config.network_url);
             } catch (error) {
 
