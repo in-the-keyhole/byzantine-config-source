@@ -24,7 +24,7 @@ class PeerConnection extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { userid: "PeerAdmin", channelid:"mychannel", peer: "grpc://localhost:7051", creds: "", crypto: "", bin: "" };
+        this.state = { userid: "PeerAdmin", channelid:"mychannel", peernode: "grpc://localhost:7051", creds: "", crypto: "", bin: "" };
 
     }
 

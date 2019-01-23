@@ -260,7 +260,7 @@ function createWindow() {
     let working_dir = path.slice(0, path.length - 1).join("/");
 
     global.config = {
-      network_url: json.peer,
+      network_url: json.peernode,
       channelid: json.channelid,
       user_id: json.userid,
       wallet_path: credspath,
