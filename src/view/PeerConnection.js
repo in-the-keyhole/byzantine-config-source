@@ -121,7 +121,7 @@ class PeerConnection extends Component {
                     <div className="control-group">
                         <label class="control-label" for="peernode">Peer Node URL:</label>
                         <div className="controls">
-                            <input id="domain" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.peernode} placeholder="grpc://localhost:7051" className="input-xlarge" />
+                            <input id="peernode" name="textinput-1" type="text" onChange={this.handleChange} value={this.state.peernode} placeholder="grpc://localhost:7051" className="input-xlarge" />
                             <p className="help-block">Fabric Network Peer Node Address</p>
                         </div>
                     </div>
