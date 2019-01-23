@@ -111,9 +111,9 @@ class PeerConnection extends Component {
                 <fieldset>
                     <legend>Connection to a HLF Peer Node</legend>
                     <div className="control-group">
-                        <label className="control-label" for="name">User Id:</label>
+                        <label className="control-label" for="userid">User Id:</label>
                         <div className="controls">
-                            <input id="name" name="textinput-0" type="text" onChange={this.handleChange} value={this.state.userid} placeholder="PeerAdmin" className="input-xlarge" />
+                            <input id="userid" name="textinput-0" type="text" onChange={this.handleChange} value={this.state.userid} placeholder="PeerAdmin" className="input-xlarge" />
                             <p className="help-block">HLF User implied</p>
                         </div>
                     </div>
