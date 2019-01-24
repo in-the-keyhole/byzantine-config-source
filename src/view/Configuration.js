@@ -53,6 +53,7 @@ class Configuration extends Component {
     this.updated = {};
     this.handleChange = this.handleChange.bind(this);
     this.currentordereradminpol = "IMPLICIT_META";
+    this.currentordererwriterpol = "IMPLICIT_META";
   
 
   }
@@ -84,6 +85,7 @@ class Configuration extends Component {
     let app = json.data.data[0].payload.data.config.channel_group.groups.Application.groups;
     let pol = json.data.data[0].payload.data.config.channel_group.policies;
     let ordereradminpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Admins;
+    let ordererwriterpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Writers;
 
     let orgs = [];
     for (var p in app) {
@@ -99,9 +101,10 @@ class Configuration extends Component {
     }
 
     this.currentordereradminpol = ordereradminpol.policy.type;
+    this.currentordererwriterpol = ordererwriterpol.policy.type;
   
     this.setState({ block: block, ordereradminpol: ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.original = { block: block, ordereradminpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    this.original = { block: block, ordereradminpol, ordereradminwriterpol: ordereradminwriterpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
     this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
@@ -184,6 +187,13 @@ class Configuration extends Component {
 
   if (this.updated.ordererpolicyadminsubpol)   {
     global.modifiedConfig.ordererpolicyadminsubpol = this.updated.ordererpolicyadminsubpol;
+    changed = true;
+  }
+
+
+  
+  if (this.updated.ordererpolicywritersubpol)   {
+    global.modifiedConfig.ordererpolicywritersubpol = this.updated.ordererpolicywritersubpol;
     changed = true;
   }
 
