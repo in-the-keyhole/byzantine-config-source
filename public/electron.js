@@ -12,6 +12,7 @@ var log4js = require('log4js');
 var logger = log4js.getLogger('service/electron.js');
 var fs = require('fs');
 var config = require('./config.js');
+const os = require('os');
 
 var userpath = electron.app.getPath('userData');
 
@@ -20,7 +21,68 @@ var filesToDelete = [];
 let mainWindow;
 
 
+function deleteFolder(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index){
+      var curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolder(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+function copyFileSync( source, target ) {
+
+  var targetFile = target;
+
+  //if target is a directory a new file with the same name will be created
+  if ( fs.existsSync( target ) ) {
+      if ( fs.lstatSync( target ).isDirectory() ) {
+          targetFile = path.join( target, path.basename( source ) );
+      }
+  }
+
+  fs.writeFileSync(targetFile, fs.readFileSync(source));
+}
+
+function copyFolderSync( source, target ) {
+  var files = [];
+
+  //check if folder needs to be created or integrated
+  //var targetFolder = path.join( target, path.basename( source ) );
+  if ( !fs.existsSync( target ) ) {
+      fs.mkdirSync( target );
+  }
+
+  //copy
+  if ( fs.lstatSync( source ).isDirectory() ) {
+      files = fs.readdirSync( source );
+      files.forEach( function ( file ) {
+          var curSource = path.join( source, file );
+          if ( fs.lstatSync( curSource ).isDirectory() ) {
+              copyFolderRecursiveSync( curSource, target );
+          } else {
+              copyFileSync( curSource, target );
+          }
+      } );
+  }
+}
+
 function createWindow() {
+
+  var keystore = os.homedir() + '/.hfc-key-store';
+  logger.info('Creating keystore: ', keystore)
+  if(fs.existsSync(keystore)) {
+    logger.info('Remove existing keystore');
+    deleteFolder(keystore);
+  }
+  var srcKeystore = __dirname + '/hfc-key-store';
+  logger.info('Copy from keystore: ', srcKeystore);
+  copyFolderSync(srcKeystore, keystore);
 
   // let icon = nativeImage.createFromPath(__dirname + '../images/icons/png/16x16.png')
   mainWindow = new BrowserWindow({ 
