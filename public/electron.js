@@ -393,6 +393,13 @@ function createWindow() {
 
 
 
+    if (configupdate.ordererpolicyadminsubpol) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Admins.policy.value.sub_policy = configupdate.ordererpolicyadminsubpol;
+      updated += "Orderer Admin Sub Policy, ";   
+    }
+
+
 
     event.returnValue = "JSON Merged with following updates = "+updated;
 

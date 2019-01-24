@@ -30,6 +30,14 @@ MSP: 2,
 IMPLICIT_META: 3 };
 
 
+const SUBPOLICIES = {
+  ADMINS: "ADMINS",
+  READERS: "READERS",
+  WRITERS: "WRITERS"
+  };
+
+
+
 const RULES = {
  ANY: 0,      // Requires any of the sub-policies be satisfied, if no sub-policies exist, always returns true
  ALL: 1,      // Requires all of the sub-policies be satisfied
@@ -75,9 +83,7 @@ class Configuration extends Component {
     let lastupdate = json.data.data[0].payload.header.channel_header.timestamp;
     let app = json.data.data[0].payload.data.config.channel_group.groups.Application.groups;
     let pol = json.data.data[0].payload.data.config.channel_group.policies;
-    let ordererpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies;
     let ordereradminpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Admins;
-
 
     let orgs = [];
     for (var p in app) {
@@ -92,10 +98,8 @@ class Configuration extends Component {
       policies.push(pol[poly]);
     }
 
-
     this.currentordereradminpol = ordereradminpol.policy.type;
   
-
     this.setState({ block: block, ordereradminpol: ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
     this.original = { block: block, ordereradminpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
     this.updated = JSON.parse(JSON.stringify(this.original));
@@ -172,6 +176,18 @@ class Configuration extends Component {
 
 
 
+  if (this.updated.ordererpolicyadminsubpol)   {
+    global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordererpolicyadminrule];
+    changed = true;
+  }
+
+
+  if (this.updated.ordererpolicyadminsubpol)   {
+    global.modifiedConfig.ordererpolicyadminsubpol = this.updated.ordererpolicyadminsubpol;
+    changed = true;
+  }
+
+
 
     if (changed) {
 
@@ -187,7 +203,7 @@ class Configuration extends Component {
     
     this.updated[event.target.name] = event.target.value;
 
-    if (event.target.name == 'ordererpolicyadmintype' ) {
+    if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordererpolicysubpol' ) {
         this.currentordereradminpol = event.target.value; 
        this.setState( { rerender: new Date().getTime() } );
     }
@@ -249,17 +265,24 @@ class Configuration extends Component {
 
        if (this.currentordereradminpol == "IMPLICIT_META") { 
 
-          let ordererruleadminselect = <div className="col"> Rule: <select disabled={this.state.edit == false} name="ordererpolicyadminrule" className="form-control" onChange={this.handleChange}>
+          let ordererruleadminselect = <div className="col-md-4">Rule: <select disabled={this.state.edit == false} name="ordererpolicyadminrule" className="form-control" onChange={this.handleChange}>
           <option value="ANY" selected={this.selected(ordereradminrule,"ANY")}>ANY</option>
           <option value="ALL" selected={this.selected(ordereradminrule,"ALL")} >ALL</option>
           <option value="MAJORITY" selected={this.selected(ordereradminrule,"MAJORITY")} >MAJORITY</option>
         </select></div>;
 
+          let orderersubpolicyselect = <div className="col-md-4">Sub: <select disabled={this.state.edit == false} name="ordererpolicyadminsubpol" className="form-control" onChange={this.handleChange}>
+          <option value="ADMINS" selected={this.selected(ordereradminsubpol,"ADMINS")}>ADMINS</option>
+          <option value="READERS" selected={this.selected(ordereradminsubpol,"READERS")} >READERS</option>
+          <option value="WRITERS" selected={this.selected(ordereradminsubpol,"WRITERS")} >WRITERS</option>
+          </select></div>;
    
-        let ordererpolicyadminselect = <form><div className="form-row"> <div className="col">  Policy Admin <select disabled={this.state.edit == false} className="form-control"  name="ordererpolicyadmintype" onChange={this.handleChange}>
+        let ordererpolicyadminselect = <div className="row"> <div className="col-md-4">Admin Policy<select disabled={this.state.edit == false} className="form-control"  name="ordererpolicyadmintype" onChange={this.handleChange}>
           <option value="IMPLICIT_META" selected={this.selected(ordereradmintype,"IMPLICIT_META")}>IMPLICIT_META</option>
-          <option value="SIGNATURE" selected={this.selected(ordereradmintype,"SIGNATURE")}  >SIGNATURE</option>
-        </select> {ordererruleadminselect} </div> </div></form>;
+          <option value="SIGNATURE" selected={this.selected(ordereradmintype,"SIGNATURE")}>SIGNATURE</option>
+        </select>  </div> {ordererruleadminselect} {orderersubpolicyselect} </div>;
+
+
 
 
          ordererpolicies.push(ordererpolicyadminselect);
@@ -269,14 +292,14 @@ class Configuration extends Component {
 
        } else {
 
+          // get signature 
 
-          let ordererruleadminselect = <div name="ordererpolicyadminrule"> Rule: N of N </div>;
-
+          let ordererruleadminselect = <div> classNam="col-md-6">Must be signed by <input name="ordererpolicyadminrule" type="text" /> of these MSP Principles <input type="text" defaultValue=""/> </div>;
  
-            let ordererpolicyadminselect = <div> Policy Admin <select readOnly={this.state.edit == false} name="ordererpolicyadmintype" onChange={this.handleChange}>
+            let ordererpolicyadminselect = <div className="row"> <div className="col-md-6">Admin Policy<select readOnly={this.state.edit == false} name="ordererpolicyadmintype" onChange={this.handleChange}>
               <option value="IMPLICIT_META" selected={this.selected(this.currentordereradminpol,"IMPLICIT_META")}>IMPLICIT_META</option>
               <option value="SIGNATURE" selected={this.selected(this.currentordereradminpol,"SIGNATURE")}  >SIGNATURE</option>
-            </select> {ordererruleadminselect} </div>;
+            </select>  </div> {ordererruleadminselect} </div>;
 
 
          ordererpolicies.push(ordererpolicyadminselect);
