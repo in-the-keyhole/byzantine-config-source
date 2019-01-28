@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React, { Component } from "react";
-import axios from "axios";
+import ImplicitMeta from "./policies/ImplicitMeta.js";
 
 
 const electron = window.require('electron');
@@ -104,7 +104,7 @@ class Configuration extends Component {
     this.currentordererwriterpol = ordererwriterpol.policy.type;
   
     this.setState({ block: block, ordereradminpol: ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.original = { block: block, ordereradminpol, ordereradminwriterpol: ordereradminwriterpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    this.original = { block: block, ordereradminpol, ordererwriterpol: ordererwriterpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
     this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
@@ -293,11 +293,11 @@ class Configuration extends Component {
         </select>  </div> {ordererruleadminselect} {orderersubpolicyselect} </div>;
 
 
+        // ordererpolicies.push(ordererpolicyadminselect);
+
+         ordererpolicies.push( <div className="row"> <ImplicitMeta name="order" edit="false" type="IMPLICIT_META" rule="ALL" onChange={this.handleChange} /> </div>  );
 
 
-         ordererpolicies.push(ordererpolicyadminselect);
-
-        
 
 
        } else {
@@ -313,6 +313,7 @@ class Configuration extends Component {
 
 
          ordererpolicies.push(ordererpolicyadminselect);
+        
 
 
        } 
