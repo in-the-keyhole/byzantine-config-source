@@ -86,6 +86,7 @@ class Configuration extends Component {
     let pol = json.data.data[0].payload.data.config.channel_group.policies;
     let ordereradminpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Admins;
     let ordererwriterpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Writers;
+    let ordererreaderpol = json.data.data[0].payload.data.config.channel_group.groups.Orderer.policies.Readers;
 
     let orgs = [];
     for (var p in app) {
@@ -103,8 +104,8 @@ class Configuration extends Component {
     this.currentordereradminpol = ordereradminpol.policy.type;
     this.currentordererwriterpol = ordererwriterpol.policy.type;
   
-    this.setState({ block: block, ordereradminpol: ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.original = { block: block, ordereradminpol, ordererwriterpol: ordererwriterpol, ordereradminpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+    this.setState({ block: block, ordereradminpol: ordereradminpol,ordererwriterpol: ordererwriterpol,  ordererreaderpol: ordererreaderpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+    this.original = { block: block, ordereradminpol:ordereradminpol , ordererwriterpol: ordererwriterpol, ordererreaderpol: ordererreaderpol,  policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
     this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
@@ -167,37 +168,63 @@ class Configuration extends Component {
     }
 
     
-    if (this.updated.ordererpolicyadmintype)   {
-        global.modifiedConfig.ordererpolicyadmintype = POLICIES[this.updated.ordererpolicyadmintype];
+    if (this.updated.ordereradminpolicytype)   {
+        global.modifiedConfig.ordererpolicyadmintype = POLICIES[this.updated.ordereradminpolicytype];
         changed = true;
     }
 
-    if (this.updated.ordererpolicyadminrule)   {
-      global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordererpolicyadminrule];
+    if (this.updated.ordereradminpolicyrule)   {
+      global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordereradminpolicyrule];
       changed = true;
   }
 
 
 
-  if (this.updated.ordererpolicyadminsubpol)   {
-    global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordererpolicyadminrule];
-    changed = true;
-  }
-
-
-  if (this.updated.ordererpolicyadminsubpol)   {
-    global.modifiedConfig.ordererpolicyadminsubpol = this.updated.ordererpolicyadminsubpol;
+  if (this.updated.ordereradminpolicysubpol)   {
+    global.modifiedConfig.ordererpolicyadminsubpol = SUBPOLICIES[this.updated.ordereradminpolicysubpol];
     changed = true;
   }
 
 
   
-  if (this.updated.ordererpolicywritersubpol)   {
-    global.modifiedConfig.ordererpolicywritersubpol = this.updated.ordererpolicywritersubpol;
+  if (this.updated.ordererwriterspolicysubpol)   {
+    global.modifiedConfig.ordererpolicywritersubpol = SUBPOLICIES[this.updated.ordererwriterspolicysubpol];
     changed = true;
   }
 
 
+  if (this.updated.ordererwriterspolicyrule)   {
+    global.modifiedConfig.ordererpolicywriterrule = RULES[this.updated.ordererwriterspolicyrule];
+    changed = true;
+  }
+
+
+
+  if (this.updated.ordererwriterspolicytype)   {
+    global.modifiedConfig.ordererpolicywritertype = POLICIES[this.updated.ordererwriterspolicytype];
+    changed = true;
+  }
+
+
+   
+  if (this.updated.ordererreaderspolicysubpol)   {
+    global.modifiedConfig.ordererpolicyreadersubpol = this.updated.ordererreaderspolicysubpol;
+    changed = true;
+  }
+
+
+  if (this.updated.ordererreaderspolicyrule)   {
+    global.modifiedConfig.ordererpolicyreaderrule = this.updated.ordererreaderspolicyrule;
+    changed = true;
+  }
+
+
+
+  if (this.updated.ordererreaderspolicytype)   {
+    global.modifiedConfig.ordererpolicyreadertype = this.updated.ordererreaderstype;
+    changed = true;
+  }
+  
 
     if (changed) {
 
@@ -213,8 +240,9 @@ class Configuration extends Component {
     
     this.updated[event.target.name] = event.target.value;
 
-    if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordererpolicysubpol' ) {
-        this.currentordereradminpol = event.target.value; 
+
+    if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordereradminpolicytype' ) {
+       this.currentordereradminpol = event.target.value; 
        this.setState( { rerender: new Date().getTime() } );
     }
 
@@ -265,60 +293,45 @@ class Configuration extends Component {
 
     let ordererpolicies = [];
      
+    let ordereradmintype = null;
+    let ordereradminrule = null;
+    let ordereradminsubpol = null;
+
+    let ordererwriterstype = null;
+    let ordererwritersrule = null;
+    let ordererwriterssubpol = null;
+
+    let ordererreaderstype = null;
+    let ordererreadersrule = null;
+    let ordererreaderssubpol = null;
+
+   
     
     if (this.state.ordereradminpol) {
     
-    let ordereradmintype = this.state.ordereradminpol.policy.type;
-    let ordereradminrule = this.state.ordereradminpol.policy.value.rule;
-    let ordereradminsubpol = this.state.ordereradminpol.policy.value.sub_policy;
+      ordereradmintype = this.state.ordereradminpol.policy.type;
+      ordereradminrule = this.state.ordereradminpol.policy.value.rule;
+      ordereradminsubpol = this.state.ordereradminpol.policy.value.sub_policy;
 
+      ordererwriterstype = this.state.ordererwriterpol.policy.type;
+      ordererwritersrule = this.state.ordererwriterpol.policy.value.rule;
+      ordererwriterssubpol = this.state.ordererwriterpol.policy.value.sub_policy;
 
-       if (this.currentordereradminpol == "IMPLICIT_META") { 
-
-          let ordererruleadminselect = <div className="col-md-4">Rule: <select disabled={this.state.edit == false} name="ordererpolicyadminrule" className="form-control" onChange={this.handleChange}>
-          <option value="ANY" selected={this.selected(ordereradminrule,"ANY")}>ANY</option>
-          <option value="ALL" selected={this.selected(ordereradminrule,"ALL")} >ALL</option>
-          <option value="MAJORITY" selected={this.selected(ordereradminrule,"MAJORITY")} >MAJORITY</option>
-        </select></div>;
-
-          let orderersubpolicyselect = <div className="col-md-4">Sub: <select disabled={this.state.edit == false} name="ordererpolicyadminsubpol" className="form-control" onChange={this.handleChange}>
-          <option value="ADMINS" selected={this.selected(ordereradminsubpol,"ADMINS")}>ADMINS</option>
-          <option value="READERS" selected={this.selected(ordereradminsubpol,"READERS")} >READERS</option>
-          <option value="WRITERS" selected={this.selected(ordereradminsubpol,"WRITERS")} >WRITERS</option>
-          </select></div>;
-   
-        let ordererpolicyadminselect = <div className="row"> <div className="col-md-4">Admin Policy<select disabled={this.state.edit == false} className="form-control"  name="ordererpolicyadmintype" onChange={this.handleChange}>
-          <option value="IMPLICIT_META" selected={this.selected(ordereradmintype,"IMPLICIT_META")}>IMPLICIT_META</option>
-          <option value="SIGNATURE" selected={this.selected(ordereradmintype,"SIGNATURE")}>SIGNATURE</option>
-        </select>  </div> {ordererruleadminselect} {orderersubpolicyselect} </div>;
-
-
-        // ordererpolicies.push(ordererpolicyadminselect);
-
-         ordererpolicies.push( <div className="row"> <ImplicitMeta name="order" edit="false" type="IMPLICIT_META" rule="ALL" onChange={this.handleChange} /> </div>  );
+      ordererreaderstype = this.state.ordererreaderpol.policy.type;
+      ordererreadersrule = this.state.ordererreaderpol.policy.value.rule;
+      ordererreaderssubpol = this.state.ordererreaderpol.policy.value.sub_policy;
 
 
 
 
-       } else {
+         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={ordereradmintype}  subpolicy={ordereradminsubpol} rule={ordereradminrule} onChange={this.handleChange} /> </div>  );
+         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Writers Policy" name="ordererwriters" edit={this.state.edit} type={ordererwriterstype} subpolicy={ordererwriterssubpol} rule={ordererwritersrule} onChange={this.handleChange} /> </div>  );
+         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Readers Policy" name="ordererreaders" edit={this.state.edit} type={ordererreaderstype} rule={ordererreadersrule} subpolicy={ordererreaderssubpol} onChange={this.handleChange} /> </div>  );
+       
 
-          // get signature 
+       
 
-          let ordererruleadminselect = <div> classNam="col-md-6">Must be signed by <input name="ordererpolicyadminrule" type="text" /> of these MSP Principles <input type="text" defaultValue=""/> </div>;
- 
-            let ordererpolicyadminselect = <div className="row"> <div className="col-md-6">Admin Policy<select readOnly={this.state.edit == false} name="ordererpolicyadmintype" onChange={this.handleChange}>
-              <option value="IMPLICIT_META" selected={this.selected(this.currentordereradminpol,"IMPLICIT_META")}>IMPLICIT_META</option>
-              <option value="SIGNATURE" selected={this.selected(this.currentordereradminpol,"SIGNATURE")}  >SIGNATURE</option>
-            </select>  </div> {ordererruleadminselect} </div>;
-
-
-         ordererpolicies.push(ordererpolicyadminselect);
-        
-
-
-       } 
-
-    }
+     }
 
     return (
       <div>
@@ -372,6 +385,8 @@ class Configuration extends Component {
                         <div class="form-control"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false}  name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
                         <div><b>Orderers:</b> <input readOnly={this.state.edit == false}  name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
                         {ordererpolicies} 
+
+                      
 
                       </fieldset>
                     </div>

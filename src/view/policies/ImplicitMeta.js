@@ -26,22 +26,39 @@ class ImplicitMeta extends Component {
   
  render() {
 
-   let ordererruleadminselect = <div className="col-md-4">Rule: <select disabled={this.props.edit == false} name={this.props.name +"policyadminrule"} className="form-control" onChange={this.props.handleChange}>
+
+   let label = <div className="col-md-3">{this.props.label}</div>;
+
+   let ordererruleadminselect = <div className="col-md-3">Rule: <select disabled={this.props.edit == false} name={this.props.name +"policyrule"} className="form-control" onChange={this.props.onChange}>
    <option value="ANY" selected={this.selected(this.props.rule,"ANY")}>ANY</option>
    <option value="ALL" selected={this.selected(this.props.rule,"ALL")} >ALL</option>
    <option value="MAJORITY" selected={this.selected(this.props.rule,"MAJORITY")} >MAJORITY</option>
    </select></div>;
 
-   let orderersubpolicyselect = <div className="col-md-4">Sub: <select disabled={this.props.edit == false} name={this.props.name+"policyadminsubpol"} className="form-control" onChange={this.props.handleChange}>
+   let orderersubpolicyselect = <div className="col-md-3">Sub: <select disabled={this.props.edit == false} name={this.props.name+"policysubpol"} className="form-control" onChange={this.props.onChange}>
    <option value="ADMINS" selected={this.selected(this.props.subpolicy,"ADMINS")}>ADMINS</option>
    <option value="READERS" selected={this.selected(this.props.subpolicy,"READERS")} >READERS</option>
    <option value="WRITERS" selected={this.selected(this.props.subpolicy,"WRITERS")} >WRITERS</option>
    </select></div>;
 
- let ordererpolicyadminselect = <div className="row"> <div className="col-md-4">Admin Policy<select disabled={this.props.edit == false} className="form-control"  name={this.props.name+"policyadmintype"} onChange={this.props.handleChange}>
+   let typeselect = null;
+
+
+   if (this.props.type == "IMPLICIT_META") {
+
+   typeselect = <div className="col-md-3"><select disabled={this.props.edit == false} className="form-control"  name={this.props.name+"policytype"} onChange={this.props.onChange}>
    <option value="IMPLICIT_META" selected={this.selected(this.props.type,"IMPLICIT_META")}>IMPLICIT_META</option>
    <option value="SIGNATURE" selected={this.selected(this.props.type,"SIGNATURE")}>SIGNATURE</option>
- </select>  </div> {ordererruleadminselect} {orderersubpolicyselect} </div>;
+   </select>  </div>;
+
+   } else {
+
+      typeselect = <div className="col-md-3">Signature</div>;
+   
+   }
+
+
+   let ordererpolicyadminselect = <div className="row"> {label} {typeselect} {ordererruleadminselect} {orderersubpolicyselect} </div>;
 
 
    return ordererpolicyadminselect;

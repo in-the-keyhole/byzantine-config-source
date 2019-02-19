@@ -400,6 +400,55 @@ function createWindow() {
     }
 
 
+    if (configupdate.ordererpolicywritertype) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Writers.policy.type = configupdate.ordererpolicywritertype;
+      updated += "Orderer Writers Policy Type, ";   
+    }
+
+
+    if (configupdate.ordererpolicywriterrule) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Writers.policy.value.rule = configupdate.ordererpolicywriterrule;
+      updated += "Orderer Writers Policy Rule, ";   
+    }
+
+
+
+    if (configupdate.ordererpolicywritersubpol) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Writers.policy.value.sub_policy = configupdate.ordererpolicywritersubpol;
+      updated += "Orderer Writers Sub Policy, ";   
+    }
+
+
+   
+    if (configupdate.ordererpolicyreadertype) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Readers.policy.type = configupdate.ordererpolicyreadertype;
+      updated += "Orderer Readers Policy Type, ";   
+    }
+
+
+    if (configupdate.ordererpolicyreaderrule) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Readers.policy.value.rule = configupdate.ordererpolicyreaderrule;
+      updated += "Orderer Readers Policy Rule, ";   
+    }
+
+
+
+    if (configupdate.ordererpolicyreadersubpol) {
+      
+      global.modifiedjson.channel_group.groups.Orderer.policies.Readers.policy.value.sub_policy = configupdate.ordererpolicyreadersubpol;
+      updated += "Orderer Readers Sub Policy, ";   
+    }
+   
+
+
+
+
+
 
     event.returnValue = "JSON Merged with following updates = "+updated;
 
