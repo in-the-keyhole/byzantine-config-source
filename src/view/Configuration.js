@@ -16,6 +16,7 @@ limitations under the License.
 
 import React, { Component } from "react";
 import ImplicitMeta from "./policies/ImplicitMeta.js";
+import Signature from "./policies/Signature.js";
 
 
 const electron = window.require('electron');
@@ -24,25 +25,27 @@ const remote = electron.remote;
 const blockservice = remote.getGlobal("blockservice");
 
 const POLICIES = {
-UNKNOWN: 0,
-SIGNATURE: 1,
-MSP: 2,
-IMPLICIT_META: 3 };
+  UNKNOWN: 0,
+  SIGNATURE: 1,
+  MSP: 2,
+  IMPLICIT_META: 3
+};
 
 
 const SUBPOLICIES = {
   ADMINS: "ADMINS",
   READERS: "READERS",
   WRITERS: "WRITERS"
-  };
+};
 
 
 
 const RULES = {
- ANY: 0,      // Requires any of the sub-policies be satisfied, if no sub-policies exist, always returns true
- ALL: 1,      // Requires all of the sub-policies be satisfied
- MAJORITY: 2}; // Requires a strict majority (greater than half) of the sub-policies be satisfied
- 
+  ANY: 0,      // Requires any of the sub-policies be satisfied, if no sub-policies exist, always returns true
+  ALL: 1,      // Requires all of the sub-policies be satisfied
+  MAJORITY: 2
+}; // Requires a strict majority (greater than half) of the sub-policies be satisfied
+
 
 class Configuration extends Component {
 
@@ -54,14 +57,16 @@ class Configuration extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.currentordereradminpol = "IMPLICIT_META";
     this.currentordererwriterpol = "IMPLICIT_META";
-  
+    this.currentordererreaderpol = "IMPLICIT_META";
+
+
 
   }
 
 
   componentDidMount() {
 
-  
+
     var ipcRenderer = electron.ipcRenderer;
     var block = ipcRenderer.sendSync('block', 'blockargs');
     var json = JSON.parse(block);
@@ -103,9 +108,10 @@ class Configuration extends Component {
 
     this.currentordereradminpol = ordereradminpol.policy.type;
     this.currentordererwriterpol = ordererwriterpol.policy.type;
-  
-    this.setState({ block: block, ordereradminpol: ordereradminpol,ordererwriterpol: ordererwriterpol,  ordererreaderpol: ordererreaderpol, policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
-    this.original = { block: block, ordereradminpol:ordereradminpol , ordererwriterpol: ordererwriterpol, ordererreaderpol: ordererreaderpol,  policies: policies, consortium: consortium,orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
+
+
+    this.setState({ block: block, ordereradminpol: ordereradminpol, ordererwriterpol: ordererwriterpol, ordererreaderpol: ordererreaderpol, policies: policies, consortium: consortium, orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout });
+    this.original = { block: block, ordereradminpol: ordereradminpol, ordererwriterpol: ordererwriterpol, ordererreaderpol: ordererreaderpol, policies: policies, consortium: consortium, orgs: orgs, lastupdate: lastupdate, orderers: ordaddr.toString(), hashingalgorithm: hashingalgo, batchsize: batchsize, consensustype: consensustype, batchtimeout: batchtimeout };
     this.updated = JSON.parse(JSON.stringify(this.original));
   }
 
@@ -134,97 +140,97 @@ class Configuration extends Component {
     global.modifiedConfig = {};
     let changed = false;
     if (this.original.batchsize != this.updated.batchsize) {
-        global.modifiedConfig.batchsize = this.updated.batchsize;
-        changed = true; 
+      global.modifiedConfig.batchsize = this.updated.batchsize;
+      changed = true;
     }
 
     if (this.original.consensustype != this.updated.consensustype) {
       global.modifiedConfig.consensustype = this.updated.consensustype;
-      changed = true; 
+      changed = true;
     }
 
 
     if (this.original.batchtimeout != this.updated.batchtimeout) {
       global.modifiedConfig.batchtimeout = this.updated.batchtimeout;
-      changed = true; 
+      changed = true;
     }
 
 
     if (this.original.orderers != this.updated.orderers) {
       global.modifiedConfig.orderers = this.updated.orderers.split(',');
-      changed = true; 
+      changed = true;
     }
 
 
     if (this.original.hashingalgo != this.updated.hashingalgo) {
       global.modifiedConfig.hashingalgo = this.updated.hashingalgo;
-      changed = true; 
+      changed = true;
     }
 
 
     if (this.original.consortium != this.updated.consortium) {
       global.modifiedConfig.consortium = this.updated.consortium;
-      changed = true; 
+      changed = true;
     }
 
-    
-    if (this.updated.ordereradminpolicytype)   {
-        global.modifiedConfig.ordererpolicyadmintype = POLICIES[this.updated.ordereradminpolicytype];
-        changed = true;
+
+    if (this.updated.ordereradminpolicytype) {
+      global.modifiedConfig.ordererpolicyadmintype = POLICIES[this.updated.ordereradminpolicytype];
+      changed = true;
     }
 
-    if (this.updated.ordereradminpolicyrule)   {
+    if (this.updated.ordereradminpolicyrule) {
       global.modifiedConfig.ordererpolicyadminrule = RULES[this.updated.ordereradminpolicyrule];
       changed = true;
-  }
+    }
 
 
 
-  if (this.updated.ordereradminpolicysubpol)   {
-    global.modifiedConfig.ordererpolicyadminsubpol = SUBPOLICIES[this.updated.ordereradminpolicysubpol];
-    changed = true;
-  }
-
-
-  
-  if (this.updated.ordererwriterspolicysubpol)   {
-    global.modifiedConfig.ordererpolicywritersubpol = SUBPOLICIES[this.updated.ordererwriterspolicysubpol];
-    changed = true;
-  }
-
-
-  if (this.updated.ordererwriterspolicyrule)   {
-    global.modifiedConfig.ordererpolicywriterrule = RULES[this.updated.ordererwriterspolicyrule];
-    changed = true;
-  }
+    if (this.updated.ordereradminpolicysubpol) {
+      global.modifiedConfig.ordererpolicyadminsubpol = SUBPOLICIES[this.updated.ordereradminpolicysubpol];
+      changed = true;
+    }
 
 
 
-  if (this.updated.ordererwriterspolicytype)   {
-    global.modifiedConfig.ordererpolicywritertype = POLICIES[this.updated.ordererwriterspolicytype];
-    changed = true;
-  }
+    if (this.updated.ordererwriterpolicysubpol) {
+      global.modifiedConfig.ordererpolicywritersubpol = SUBPOLICIES[this.updated.ordererwriterpolicysubpol];
+      changed = true;
+    }
 
 
-   
-  if (this.updated.ordererreaderspolicysubpol)   {
-    global.modifiedConfig.ordererpolicyreadersubpol = this.updated.ordererreaderspolicysubpol;
-    changed = true;
-  }
-
-
-  if (this.updated.ordererreaderspolicyrule)   {
-    global.modifiedConfig.ordererpolicyreaderrule = this.updated.ordererreaderspolicyrule;
-    changed = true;
-  }
+    if (this.updated.ordererwriterpolicyrule) {
+      global.modifiedConfig.ordererpolicywriterrule = RULES[this.updated.ordererwriterpolicyrule];
+      changed = true;
+    }
 
 
 
-  if (this.updated.ordererreaderspolicytype)   {
-    global.modifiedConfig.ordererpolicyreadertype = this.updated.ordererreaderstype;
-    changed = true;
-  }
-  
+    if (this.updated.ordererwriterpolicytype) {
+      global.modifiedConfig.ordererpolicywritertype = POLICIES[this.updated.ordererwriterpolicytype];
+      changed = true;
+    }
+
+
+
+    if (this.updated.ordererreaderpolicysubpol) {
+      global.modifiedConfig.ordererpolicyreadersubpol = this.updated.ordererreaderpolicysubpol;
+      changed = true;
+    }
+
+
+    if (this.updated.ordererreaderpolicyrule) {
+      global.modifiedConfig.ordererpolicyreaderrule = this.updated.ordererreaderpolicyrule;
+      changed = true;
+    }
+
+
+
+    if (this.updated.ordererreaderpolicytype) {
+      global.modifiedConfig.ordererpolicyreadertype = this.updated.ordererreadertype;
+      changed = true;
+    }
+
 
     if (changed) {
 
@@ -237,28 +243,43 @@ class Configuration extends Component {
 
 
   handleChange(event) {
-    
+
     this.updated[event.target.name] = event.target.value;
 
+    // if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordereradminpolicytype') {
 
-    if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordereradminpolicytype' ) {
-       this.currentordereradminpol = event.target.value; 
-       this.setState( { rerender: new Date().getTime() } );
+    if (event.target.name == 'ordereradminpolicytype') {
+      this.currentordereradminpol = event.target.value;
+      this.setState({ rerender: new Date().getTime() });
+    }
+
+    if (event.target.name == 'ordererwriterpolicytype') {
+      this.currentordererwriterpol = event.target.value;
+      this.setState({ rerender: new Date().getTime() });
     }
 
 
+    if (event.target.name == 'ordererreaderpolicytype') {
+      this.currentordererreaderpol = event.target.value;
+      this.setState({ rerender: new Date().getTime() });
+    }
+
+
+
+
   }
 
-  selected(l,r) {
+  selected(l, r) {
 
-    return l == r ? " selected " : ""; 
+    return l == r ? " selected " : "";
 
   }
-      
+
 
   render() {
 
     let orgs = [];
+    let msporgs = [];
     let EditSave = () => <button class="btn btn-link" onClick={this.clickEdit}>Edit</button>;
 
     if (this.state.edit) {
@@ -268,12 +289,12 @@ class Configuration extends Component {
 
     }
 
-
     orgs.push(<div><b>Channel:</b> {global.config.channelid} </div>);
 
     if (this.state.orgs) {
       this.state.orgs.forEach((o) => {
         orgs.push(<div><b>Org:</b> {o.name}</div>);
+        msporgs.push(o.name);
       }
       );
     }
@@ -292,46 +313,79 @@ class Configuration extends Component {
 
 
     let ordererpolicies = [];
-     
+
     let ordereradmintype = null;
     let ordereradminrule = null;
     let ordereradminsubpol = null;
+    let ordereradminnofn = null;
+    let ordereradminsigs = null;
 
     let ordererwriterstype = null;
     let ordererwritersrule = null;
     let ordererwriterssubpol = null;
+    let ordererwritersnofn = null;
+    let ordererwriterssigs = null;
 
     let ordererreaderstype = null;
     let ordererreadersrule = null;
     let ordererreaderssubpol = null;
+    let ordererreadersnofn = null;
+    let ordererreaderssigs = null;
 
-   
-    
+
     if (this.state.ordereradminpol) {
-    
-      ordereradmintype = this.state.ordereradminpol.policy.type;
-      ordereradminrule = this.state.ordereradminpol.policy.value.rule;
-      ordereradminsubpol = this.state.ordereradminpol.policy.value.sub_policy;
 
-      ordererwriterstype = this.state.ordererwriterpol.policy.type;
-      ordererwritersrule = this.state.ordererwriterpol.policy.value.rule;
-      ordererwriterssubpol = this.state.ordererwriterpol.policy.value.sub_policy;
-
-      ordererreaderstype = this.state.ordererreaderpol.policy.type;
-      ordererreadersrule = this.state.ordererreaderpol.policy.value.rule;
-      ordererreaderssubpol = this.state.ordererreaderpol.policy.value.sub_policy;
+      if (this.currentordereradminpol == "IMPLICIT_META") {
 
 
+        ordereradmintype = this.state.ordereradminpol.policy.type;
+        ordereradminrule = this.state.ordereradminpol.policy.value.rule;
+        ordereradminsubpol = this.state.ordereradminpol.policy.value.sub_policy;
+
+        ordererpolicies.push(<div className="row"> <ImplicitMeta label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={this.currentordereradminpol} subpolicy={ordereradminsubpol} rule={ordereradminrule} onChange={this.handleChange} /> </div>);
+      } else {
+
+        let ordereradminnofn = 1;
+        let ordereradminsigs = msporgs;
+
+        ordererpolicies.push(<div className="row"> <Signature label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={this.currentordereradminpol} nofn={ordereradminnofn} orgs={msporgs} sigs={ordereradminsigs} onChange={this.handleChange} /> </div>);
+      }
 
 
-         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={ordereradmintype}  subpolicy={ordereradminsubpol} rule={ordereradminrule} onChange={this.handleChange} /> </div>  );
-         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Writers Policy" name="ordererwriters" edit={this.state.edit} type={ordererwriterstype} subpolicy={ordererwriterssubpol} rule={ordererwritersrule} onChange={this.handleChange} /> </div>  );
-         ordererpolicies.push( <div className="row"> <ImplicitMeta label="Readers Policy" name="ordererreaders" edit={this.state.edit} type={ordererreaderstype} rule={ordererreadersrule} subpolicy={ordererreaderssubpol} onChange={this.handleChange} /> </div>  );
-       
+      if (this.currentordererwriterpol == "IMPLICIT_META") {
 
-       
+        ordererwriterstype = this.state.ordererwriterpol.policy.type;
+        ordererwritersrule = this.state.ordererwriterpol.policy.value.rule;
+        ordererwriterssubpol = this.state.ordererwriterpol.policy.value.sub_policy;
 
-     }
+        ordererpolicies.push(<div className="row"> <ImplicitMeta label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} subpolicy={ordererwriterssubpol} sigs={ordererwritersrule} onChange={this.handleChange} /> </div>);
+      } else {
+
+
+        let ordererwritersnofn = 1;
+        let ordererwriterssigs = msporgs;
+
+        ordererpolicies.push(<div className="row"> <Signature label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} nofn={ordererwritersnofn} sigs={ordererwriterssigs} onChange={this.handleChange} /> </div>);
+      }
+      if (this.currentordererreaderpol == "IMPLICIT_META") {
+
+
+        ordererreaderstype = this.state.ordererreaderpol.policy.type;
+        ordererreadersrule = this.state.ordererreaderpol.policy.value.rule;
+        ordererreaderssubpol = this.state.ordererreaderpol.policy.value.sub_policy;
+
+        ordererpolicies.push(<div className="row"> <ImplicitMeta label="Readers Policy" name="ordererreader" edit={this.state.edit} type={this.currentordererreaderpol} rule={ordererreadersrule} subpolicy={ordererreaderssubpol} onChange={this.handleChange} /> </div>);
+      } else {
+
+
+        let ordererreadersnofn = 1;
+        let ordererreaderssigs = msporgs;
+
+        ordererpolicies.push(<div className="row"> <Signature label="Readers Policy" name="ordererreader" edit={this.state.edit} type={this.currentordererreaderpol} nofn={ordererreadersnofn} sigs={ordererreaderssigs} onChange={this.handleChange} /> </div>);
+      }
+
+
+    }
 
     return (
       <div>
@@ -380,13 +434,13 @@ class Configuration extends Component {
                   <form className="form-horizontal">
                     <div className="control-group">
                       <fieldset>
-                        <div class="form-control"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false}  name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge" /></div>
-                        <div class="form-control"><b>Consensus Type:</b> <input readOnly={this.state.edit == false}  name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge" /></div>
-                        <div class="form-control"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false}  name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
-                        <div><b>Orderers:</b> <input readOnly={this.state.edit == false}  name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
-                        {ordererpolicies} 
+                        <div class="form-control"><b>Batch Size:</b> <input ref="batchsize" readOnly={this.state.edit == false} name="batchsize" type="text" onChange={this.handleChange} defaultValue={this.state.batchsize} className="input-xlarge" /></div>
+                        <div class="form-control"><b>Consensus Type:</b> <input readOnly={this.state.edit == false} name="consensustype" type="text" onChange={this.handleChange} defaultValue={this.state.consensustype} placeholder="type" className="input-xlarge" /></div>
+                        <div class="form-control"><b>Batch Timeout:</b> <input readOnly={this.state.edit == false} name="batchtimeout" onChange={this.handleChange} defaultValue={this.state.batchtimeout} className="input-xlarge" /></div>
+                        <div><b>Orderers:</b> <input readOnly={this.state.edit == false} name="orderers" type="text" onChange={this.handleChange} defaultValue={this.state.orderers} className="input-xlarge" /></div>
+                        {ordererpolicies}
 
-                      
+
 
                       </fieldset>
                     </div>

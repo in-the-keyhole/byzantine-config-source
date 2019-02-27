@@ -21,7 +21,7 @@ const remote = electron.remote;
 const blockservice = remote.getGlobal("blockservice");
 
 
-class ImplicitMeta extends Component {
+class Signature extends Component {
 
   
  render() {
@@ -29,11 +29,7 @@ class ImplicitMeta extends Component {
 
    let label = <div className="col-md-3">{this.props.label}</div>;
 
-   let ordererruleadminselect = <div className="col-md-3">Rule: <select disabled={this.props.edit == false} name={this.props.name +"policyrule"} className="form-control" onChange={this.props.onChange}>
-   <option value="ANY" selected={this.selected(this.props.rule,"ANY")}>ANY</option>
-   <option value="ALL" selected={this.selected(this.props.rule,"ALL")} >ALL</option>
-   <option value="MAJORITY" selected={this.selected(this.props.rule,"MAJORITY")} >MAJORITY</option>
-   </select></div>;
+   let nofn = <div className="col-md-3">N of <input name={this.props.name} ref={this.props.name} defaultValue={this.props.nofn} type="text" onChange={this.handleChange} className="input-xlarge" /> </div>;
 
    let orderersubpolicyselect = <div className="col-md-3">Sub: <select disabled={this.props.edit == false} name={this.props.name+"policysubpol"} className="form-control" onChange={this.props.onChange}>
    <option value="ADMINS" selected={this.selected(this.props.subpolicy,"ADMINS")}>ADMINS</option>
@@ -43,14 +39,13 @@ class ImplicitMeta extends Component {
 
    let typeselect = null;
 
-
    typeselect = <div className="col-md-3"><select disabled={this.props.edit == false} className="form-control"  name={this.props.name+"policytype"} onChange={this.props.onChange}>
    <option value="IMPLICIT_META" selected={this.selected(this.props.type,"IMPLICIT_META")}>IMPLICIT_META</option>
    <option value="SIGNATURE" selected={this.selected(this.props.type,"SIGNATURE")}>SIGNATURE</option>
    </select>  </div>;
 
-   
-   let ordererpolicyadminselect = <div className="row"> {label} {typeselect} {ordererruleadminselect} {orderersubpolicyselect} </div>;
+
+   let ordererpolicyadminselect = <div className="row"> {label} {typeselect} {nofn} {orderersubpolicyselect} </div>;
 
 
    return ordererpolicyadminselect;
@@ -68,4 +63,4 @@ class ImplicitMeta extends Component {
 }
 
 
-export default ImplicitMeta;
+export default Signature;
