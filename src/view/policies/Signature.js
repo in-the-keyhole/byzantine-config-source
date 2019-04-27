@@ -31,11 +31,22 @@ class Signature extends Component {
 
    let nofn = <div className="col-md-3">N of <input name={this.props.name} ref={this.props.name} defaultValue={this.props.nofn} type="text" onChange={this.handleChange} className="input-xlarge" /> </div>;
 
-   let orderersubpolicyselect = <div className="col-md-3">Sub: <select disabled={this.props.edit == false} name={this.props.name+"policysubpol"} className="form-control" onChange={this.props.onChange}>
-   <option value="ADMINS" selected={this.selected(this.props.subpolicy,"ADMINS")}>ADMINS</option>
-   <option value="READERS" selected={this.selected(this.props.subpolicy,"READERS")} >READERS</option>
-   <option value="WRITERS" selected={this.selected(this.props.subpolicy,"WRITERS")} >WRITERS</option>
+   let options = [];
+
+   for (var o in this.props.sigs) {
+
+      options.push(  <option value={this.props.sigs[o]}  selected={this.orgselected(this.props.sigs[o], this.props.msporgs)}    >{this.props.sigs[o]}</option> );       
+
+   }
+
+
+   let signatures = <div className="col-md-3">Sub: <select multiple disabled={this.props.edit == false} name={this.props.name+"signaturemsp"} className="form-control" onChange={this.props.onChange}>
+      {options}
    </select></div>;
+
+    
+
+
 
    let typeselect = null;
 
@@ -45,7 +56,7 @@ class Signature extends Component {
    </select>  </div>;
 
 
-   let ordererpolicyadminselect = <div className="row"> {label} {typeselect} {nofn} {orderersubpolicyselect} </div>;
+   let ordererpolicyadminselect = <div className="row"> {label} {typeselect} {nofn} {signatures} </div>;
 
 
    return ordererpolicyadminselect;
@@ -59,6 +70,23 @@ class Signature extends Component {
 
  }
   
+
+ orgselected(l,orgs) {
+
+  let result = "";
+  for (var i in orgs) {
+     
+    if (l == orgs[i]) {
+      return "selected";
+    }
+
+  }
+
+  return result;
+
+}
+
+
 
 }
 

@@ -248,7 +248,13 @@ class Configuration extends Component {
 
     // if (event.target.name == 'ordererpolicyadmintype' || event.target.name == 'ordereradminpolicytype') {
 
+      if (event.target.name == 'ordereradminsignaturemsp') {
+          alert(event.target.value);
+      } 
+    
+    
     if (event.target.name == 'ordereradminpolicytype') {
+    
       this.currentordereradminpol = event.target.value;
       this.setState({ rerender: new Date().getTime() });
     }
@@ -348,7 +354,7 @@ class Configuration extends Component {
         let ordereradminnofn = 1;
         let ordereradminsigs = msporgs;
 
-        ordererpolicies.push(<div className="row"> <Signature label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={this.currentordereradminpol} nofn={ordereradminnofn} orgs={msporgs} sigs={ordereradminsigs} onChange={this.handleChange} /> </div>);
+        ordererpolicies.push(<div className="row"> <Signature label="Admin Policy" name="ordereradmin" edit={this.state.edit} type={this.currentordereradminpol} nofn={ordereradminnofn} sigs={ordereradminsigs}  msporgs={msporgs} onChange={this.handleChange} /> </div>);
       }
 
 
@@ -358,14 +364,14 @@ class Configuration extends Component {
         ordererwritersrule = this.state.ordererwriterpol.policy.value.rule;
         ordererwriterssubpol = this.state.ordererwriterpol.policy.value.sub_policy;
 
-        ordererpolicies.push(<div className="row"> <ImplicitMeta label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} subpolicy={ordererwriterssubpol} sigs={ordererwritersrule} onChange={this.handleChange} /> </div>);
+        ordererpolicies.push(<div className="row"> <ImplicitMeta label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} subpolicy={ordererwriterssubpol} sigs={ordererwritersrule}  onChange={this.handleChange} /> </div>);
       } else {
 
 
         let ordererwritersnofn = 1;
         let ordererwriterssigs = msporgs;
 
-        ordererpolicies.push(<div className="row"> <Signature label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} nofn={ordererwritersnofn} sigs={ordererwriterssigs} onChange={this.handleChange} /> </div>);
+        ordererpolicies.push(<div className="row"> <Signature label="Writers Policy" name="ordererwriter" edit={this.state.edit} type={this.currentordererwriterpol} nofn={ordererwritersnofn} sigs={ordererwriterssigs} msporgs={msporgs} onChange={this.handleChange} /> </div>);
       }
       if (this.currentordererreaderpol == "IMPLICIT_META") {
 
@@ -381,7 +387,7 @@ class Configuration extends Component {
         let ordererreadersnofn = 1;
         let ordererreaderssigs = msporgs;
 
-        ordererpolicies.push(<div className="row"> <Signature label="Readers Policy" name="ordererreader" edit={this.state.edit} type={this.currentordererreaderpol} nofn={ordererreadersnofn} sigs={ordererreaderssigs} onChange={this.handleChange} /> </div>);
+        ordererpolicies.push(<div className="row"> <Signature label="Readers Policy" name="ordererreader" edit={this.state.edit} type={this.currentordererreaderpol} nofn={ordererreadersnofn} sigs={ordererreaderssigs} msporgss={msporgs} onChange={this.handleChange} /> </div>);
       }
 
 
