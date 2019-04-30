@@ -1,3 +1,6 @@
+
+# NOTE: This project is now a part of the Linux Foundations Hyperledger Labs, here's a [link](https://github.com/hyperledger-labs/byzantine-config) to the repo. 
+
 # byzantine-config-source
 
 Hyperledger Fabric Network Configuration Manager allowing configuration blocks to be created to add Organizations, and update network configuration properties.
@@ -5,6 +8,7 @@ Hyperledger Fabric Network Configuration Manager allowing configuration blocks t
 A desktop application implemented using Electron and ReactJS. 
 
 Pre-built executable binaries are available in this [repo](https://github.com/in-the-keyhole/byzantine-config) 
+
 
 ### Installing and Starting 
 
