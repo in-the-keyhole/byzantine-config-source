@@ -1,5 +1,5 @@
 
-# NOTE: This project is now a part of the Linux Foundations Hyperledger Labs, here's a [link](https://github.com/hyperledger-labs/byzantine-config) to the repo. 
+# NOTE: This project is now a part of the Linux Foundations Hyperledger Labs, here's a [link](https://github.com/hyperledger-labs/byzantine-config) to the repo.   This repo will be removed at some point
 
 # byzantine-config-source
 
